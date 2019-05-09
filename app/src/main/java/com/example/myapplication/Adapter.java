@@ -81,7 +81,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ImgViewHolder> {
         });
     }
 
-    // 데이터의 크기를 리턴
+    // 데이터의 크기를 리턴/////
     @Override
     public int getItemCount() {
         return urlDataList.size();
