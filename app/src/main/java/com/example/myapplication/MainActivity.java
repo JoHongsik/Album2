@@ -3,7 +3,6 @@ package com.example.myapplication;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.pm.ActivityInfo;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,10 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,31 +29,45 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
     public static int URLNumber = 1;
-    public static int toPosition = 0;
     private  ArrayList<String> findURL;
+
+    // page를 넘겨주기 위한 변수(page), 스크롤 시 한번만 내리게 하기 위한 변수(comparePage)
     public static int page = 1;
     public static int comparePage = 2;
+
+    // RecyclerView를 만들기 위한 변수들
+    public static RecyclerView recyclerView;
+    private Adapter Adapter;
+    private RecyclerView.LayoutManager layoutManager;
+
+    // url주소와 Split하기 위한 string 변수
     public static String URL =
             "https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf,rm&page="+page+"&recency=anydate&suppressfamilycorrection=true";
     public static final String findString = "asset__thumb\"";
+
+    // 가져온 페이지 소스를 저장할 string 변수
     private String result;
 
-    private ScaleGestureDetector scaleGestureDetector;
-    private float ScaleFactor = 1.0f;
-    public static RecyclerView recyclerView;
-    private Adapter mAdapter;
-    private RecyclerView.LayoutManager layoutManager;
+    // 사진이 들어있는 url을 저장하고 있는 List
     public ArrayList<URLData> urlDataList;
+
+    // 페이지 소스에서 asset__thumb를 몇개 가지고 있는지
     private int splitLength;
+
+    // Pinch zoomIn zoomOut을 하기 위한 변수들
+    private ScaleGestureDetector scaleGestureDetector;
     private float detectFactor;
     private int spanCount = 3;
-    private int compareSpanCount = 3;
+    private int compareSpanCount = 3;   // spanCount를 한번만 가져오기 위한 변수.
 
+    //dialog
     private ProgressDialog dialog;
-    private Toolbar toolbar;
-    private boolean isChecked = false;
 
+    //toolbar 관련 변수들
+    private Toolbar toolbar;
+    private boolean isChecked = false;  //isChecked가 false이면 toolbar에 사진 저장하기 버튼이 없음.
     private MenuItem saveItem;
+
 
     protected void onRestart() {
         super.onRestart();
@@ -87,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Log.d("onCreate","onCreate");
-
 
         // toolbart 세팅
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -132,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 if(compareSpanCount!=spanCount) {
                     layoutManager = new GridLayoutManager(MainActivity.this, spanCount);
                     recyclerView.setLayoutManager(layoutManager);
-                    mAdapter.notifyDataSetChanged();
+                    Adapter.notifyDataSetChanged();
                     compareSpanCount = spanCount;
                 }
             }
@@ -142,12 +151,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                // recyclerview에 들어오는 터치 이벤트를 파라미터로 사용해서 scaleGestureDetector 활성화
                 scaleGestureDetector.onTouchEvent(event);
-                Log.d("onTouchtest","test");
 
+                // zoom out
                 if(detectFactor < 0.995) {
-                    Log.d("spanCount= ",""+spanCount);
-                    Log.d("compareSpanCount= ",""+compareSpanCount);
                     if(spanCount == 3 && (compareSpanCount == spanCount)) {
                         spanCount++;
                     }
@@ -156,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+                // zoom in
                 else if(detectFactor > 1.011) {
                     Log.d("spanCount= ",""+spanCount);
                     Log.d("compareSpanCount= ",""+compareSpanCount);
@@ -178,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
                 if(!recyclerView.canScrollVertically(1)){
                     URL = "https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf,rm&page="+page+"&recency=anydate&suppressfamilycorrection=true";
                     dialog.show();
+                    // scroll을 여러번해서 page가 두번이상 넘어가는것을 방지하기 위한 if문
                     if(comparePage == page) {
                         comparePage++;
                         setURL();
@@ -190,10 +200,10 @@ public class MainActivity extends AppCompatActivity {
     private void setRecyclerView(){
         recyclerView.setHasFixedSize(true);
 
-        mAdapter = new Adapter(urlDataList,this,recyclerView);
+        Adapter = new Adapter(urlDataList,this);
         layoutManager = new GridLayoutManager(this,spanCount);
 
-        recyclerView.setAdapter(mAdapter);
+        recyclerView.setAdapter(Adapter);
         recyclerView.setLayoutManager(layoutManager);
     }
 
@@ -244,14 +254,14 @@ public class MainActivity extends AppCompatActivity {
             URLData urlData = new URLData(findURL.get(i),URLNumber++);
             urlDataList.add(urlData);
         }
-        mAdapter.notifyDataSetChanged();
+        Adapter.notifyDataSetChanged();
     }
 
     @Override
     public void onBackPressed() {
         if(isChecked) {
-            mAdapter.settingClicked();
-            mAdapter.setCheckedNull();
+            Adapter.settingClicked();
+            Adapter.setCheckedNull();
 
             isChecked = !isChecked;
             saveItem.setVisible(isChecked);
@@ -277,16 +287,16 @@ public class MainActivity extends AppCompatActivity {
                 if(isChecked) {
                     isChecked = false;
                     saveItem.setVisible(isChecked);
-                    mAdapter.setCheckedNull();
+                    Adapter.setCheckedNull();
                 }
                 else {
                     isChecked = true;
                     saveItem.setVisible(isChecked);
                 }
-                    mAdapter.settingClicked();
+                    Adapter.settingClicked();
                 return true;
             case R.id.save:
-                mAdapter.saveClicked();
+                Adapter.saveClicked();
 
         }
 
