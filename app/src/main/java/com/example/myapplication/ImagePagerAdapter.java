@@ -2,10 +2,12 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Picture;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +21,7 @@ public class ImagePagerAdapter extends PagerAdapter {
     private ImageView imageView;
     private ArrayList<URLData> urlDataList;
     private int urlposition;
-
+    private OnPictureAreaClickedListener listener;
 
     public ImagePagerAdapter(Context context,ArrayList<URLData> urlDataList, int position ){
         this.context = context;
@@ -36,12 +38,16 @@ public class ImagePagerAdapter extends PagerAdapter {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.activity_picture_detail, container, false);
 
+            // imageView를 클릭하면 여러가지 imageButton이 나옴.
             imageView = (ImageView) view.findViewById(R.id.detailImage2);
-
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    checkVisibility();
+
+                    if(listener != null) {
+                        Log.d("ImageView","setOnClickListener");
+                        listener.onPictureAreaClicked();
+                    }
                 }
             });
 
@@ -65,11 +71,6 @@ public class ImagePagerAdapter extends PagerAdapter {
     @Override
     public int getCount() {
         return urlDataList.size();
-
-        /*if(urlDataList.size()-urlposition>10)   // size가 60일 때, 51(50)번째 사진까지만 viewpager 크기를 10
-            return 10;
-        else
-            return urlDataList.size()-urlposition;  //size가 60일 때, 52(51)번째 사진일 경우 viewpager 크기를 9*/
     }
 
     @Override
@@ -82,16 +83,10 @@ public class ImagePagerAdapter extends PagerAdapter {
         ((ViewPager)container).removeView((View)object);
     }
 
-    public void checkVisibility(){
-        if(PictureDetail.close_btn.getVisibility() == View.VISIBLE) {
-            PictureDetail.close_btn.setVisibility(View.INVISIBLE);
-            PictureDetail.share_btn.setVisibility(View.INVISIBLE);
-            PictureDetail.save_btn.setVisibility(View.INVISIBLE);
-        }
-        else{
-            PictureDetail.close_btn.setVisibility(View.VISIBLE);
-            PictureDetail.share_btn.setVisibility(View.VISIBLE);
-            PictureDetail.save_btn.setVisibility(View.VISIBLE);
-        }
+    public void setOnPictureAreaClickedListener (OnPictureAreaClickedListener listener) {
+        Log.d("setOnPictureAreaClicked","setOnPictureAreaClickedListner");
+        this.listener = listener;
     }
+
+
 }

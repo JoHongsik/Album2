@@ -41,13 +41,13 @@ import static com.example.myapplication.MainActivity.URL;
 import static com.example.myapplication.MainActivity.comparePage;
 import static com.example.myapplication.MainActivity.page;
 
-public class PictureDetail extends Activity {
+public class PictureDetail extends Activity implements OnPictureAreaClickedListener {
     private ViewPager viewpager;
     private ImagePagerAdapter imagePagerAdapter;
     private int position;
-    public static ImageButton close_btn;
-    public static ImageButton save_btn;
-    public static ImageButton share_btn;
+    public ImageButton close_btn;
+    public ImageButton save_btn;
+    public ImageButton share_btn;
     private String FileName;
     private ArrayList<URLData> urlDataList;
     private String result;
@@ -112,11 +112,11 @@ public class PictureDetail extends Activity {
             @Override
             public void onClick(View v) {
 
-
             }
         });
 
         imagePagerAdapter = new ImagePagerAdapter(this, urlDataList, position);
+        imagePagerAdapter.setOnPictureAreaClickedListener(this);
 
         viewpager.setAdapter(imagePagerAdapter);
         viewpager.setCurrentItem(position);
@@ -133,7 +133,6 @@ public class PictureDetail extends Activity {
                         setURLflag = false;
                         setURL();
                     }
-
                 }
             }
 
@@ -147,7 +146,6 @@ public class PictureDetail extends Activity {
 
             }
         });
-
     }
 
     private String saveImage(Bitmap image) {
@@ -279,4 +277,20 @@ public class PictureDetail extends Activity {
         dialog.dismiss();
     }
 
+    @Override
+    public void onPictureAreaClicked() {
+        Log.d("onPictureAreaClicked","onPictureAreaClicked");
+        if(close_btn.getVisibility() == View.VISIBLE) {
+           close_btn.setVisibility(View.INVISIBLE);
+            share_btn.setVisibility(View.INVISIBLE);
+            save_btn.setVisibility(View.INVISIBLE);
+        }
+        else{
+            close_btn.setVisibility(View.VISIBLE);
+            share_btn.setVisibility(View.VISIBLE);
+            save_btn.setVisibility(View.VISIBLE);
+        }
+    }
 }
+
+

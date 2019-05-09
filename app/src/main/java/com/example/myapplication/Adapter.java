@@ -20,7 +20,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ImgViewHolder> {
     public boolean checkboxVis = false;
     public ArrayList<Integer> CheckedNo;
 
-
     public Adapter(ArrayList<URLData> urlDataList, Context context){
         this.urlDataList = urlDataList;
         this.context = context;
