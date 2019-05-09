@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onRestart() {
         super.onRestart();
-        Log.d("onRestart","onRestart");
+        Log.d("onRestart","onRestart2");
     }
 
     protected void onPause() {
@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
 
             isChecked = !isChecked;
             saveItem.setVisible(isChecked);
-            
+
         }
         else
             super.onBackPressed();
