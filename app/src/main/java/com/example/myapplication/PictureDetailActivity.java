@@ -14,11 +14,9 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -38,10 +36,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.example.myapplication.MainActivity.URL;
-import static com.example.myapplication.MainActivity.comparePage;
-import static com.example.myapplication.MainActivity.page;
 
-public class PictureDetail extends Activity implements OnPictureAreaClickedListener {
+public class PictureDetailActivity extends Activity implements OnPictureAreaClickedListener {
     private ViewPager viewpager;
     private ImagePagerAdapter imagePagerAdapter;
     private int position;
@@ -74,7 +70,7 @@ public class PictureDetail extends Activity implements OnPictureAreaClickedListe
         position = intent.getExtras().getInt("position");
         urlDataList = (ArrayList<URLData>) intent.getSerializableExtra("url");
 
-        dialog = new ProgressDialog(PictureDetail.this);
+        dialog = new ProgressDialog(PictureDetailActivity.this);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.setMessage("Data Loading..");
         dialog.setCancelable(false);
@@ -94,7 +90,7 @@ public class PictureDetail extends Activity implements OnPictureAreaClickedListe
                 CheckPermission();
 
                 // gilde로 bitmap형식의 image파일 준비 후 saveimage 메소드 호출(이미지 저장)
-                Glide.with(PictureDetail.this)
+                Glide.with(PictureDetailActivity.this)
                         .load(urlDataList.get(position).getURL())
                         .asBitmap()
                         .into(new SimpleTarget<Bitmap>() {
@@ -123,12 +119,10 @@ public class PictureDetail extends Activity implements OnPictureAreaClickedListe
 
         viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
+            //현재 페이지(i)가 urldataList의 끝이고 && 완전히 다 보이는 상태라면 (i1 == 0)
             public void onPageScrolled(int i, float positionOffset, int i1) {
-                Log.d("positionOffsetPixels",""+i1);
                 if (i == (urlDataList.size()-1) && i1==0){
                     dialog.show();
-                    Log.d("comparePage",""+comparePage);
-                    Log.d("page",""+page);
                     if(setURLflag) {
                         setURLflag = false;
                         setURL();
@@ -180,14 +174,13 @@ public class PictureDetail extends Activity implements OnPictureAreaClickedListe
 
             // Add the image to the system gallery , 미디어스캔 실행.
             galleryAddPic(savedImagePath);
-            Toast.makeText(PictureDetail.this, "IMAGE SAVED", Toast.LENGTH_LONG).show();
+            Toast.makeText(PictureDetailActivity.this, "IMAGE SAVED", Toast.LENGTH_LONG).show();
         }
         return savedImagePath;
     }
 
-    // 미디어 스캔 실행.
+    // 미디어 스캔 실행. 이미지 저장 바로 적용.
     private void galleryAddPic(String imagePath) { // https://underground2.tistory.com/43
-
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(imagePath);
         Uri contentUri = Uri.fromFile(f);
@@ -252,7 +245,7 @@ public class PictureDetail extends Activity implements OnPictureAreaClickedListe
                 }
 
 
-                PictureDetail.this.runOnUiThread(new Runnable() {
+                PictureDetailActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         setData();
@@ -263,12 +256,10 @@ public class PictureDetail extends Activity implements OnPictureAreaClickedListe
     }
 
     private void setData(){
-        Log.d("test",""+findURL.size());
         for(int i=0; i<splitLength-1; i++){
             URLData urlData = new URLData(findURL.get(i),MainActivity.URLNumber++);
             urlDataList.add(urlData);
         }
-
         imagePagerAdapter.notifyDataSetChanged();
         viewpager.setAdapter(imagePagerAdapter);
         viewpager.setCurrentItem(urlDataList.size()-splitLength);
@@ -277,9 +268,9 @@ public class PictureDetail extends Activity implements OnPictureAreaClickedListe
         dialog.dismiss();
     }
 
+    // ImagePagerAdapter에서 콜백을 날림.
     @Override
     public void onPictureAreaClicked() {
-        Log.d("onPictureAreaClicked","onPictureAreaClicked");
         if(close_btn.getVisibility() == View.VISIBLE) {
            close_btn.setVisibility(View.INVISIBLE);
             share_btn.setVisibility(View.INVISIBLE);

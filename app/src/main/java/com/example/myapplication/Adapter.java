@@ -4,12 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import java.util.ArrayList;
@@ -71,7 +69,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ImgViewHolder> {
                     ViewHolder.checkBox.setChecked(urlDataList.get(i).getCheckBoxState());
                 }
                 else{
-                    Intent intent = new Intent(context, PictureDetail.class);
+                    Intent intent = new Intent(context, PictureDetailActivity.class);
                     intent.putExtra("url", urlDataList);
                     intent.putExtra("position", i);
                     context.startActivity(intent);
@@ -109,8 +107,13 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ImgViewHolder> {
     // 추가버튼 눌렀을 때 이벤트
     public void saveClicked(){
         for(int j=0; j<urlDataList.size(); j++){
-            if(urlDataList.get(j).getCheckBoxState())
-                Log.d("몇번째가 체크됬어?", ""+j);
+
+
+
+
+
+            /*if(urlDataList.get(j).getCheckBoxState())
+                Log.d("몇번째가 체크됬어?", ""+j);*/
         }
     }
 

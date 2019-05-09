@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     // page를 넘겨주기 위한 변수(page), 스크롤 시 한번만 내리게 하기 위한 변수(comparePage)
     public static int page = 1;
-    public static int comparePage = 2;
+    public int comparePage = 2;
 
     // RecyclerView를 만들기 위한 변수들
     public static RecyclerView recyclerView;
@@ -68,23 +69,25 @@ public class MainActivity extends AppCompatActivity {
     private boolean isChecked = false;  //isChecked가 false이면 toolbar에 사진 저장하기 버튼이 없음.
     private MenuItem saveItem;
 
-
+    @Override
     protected void onRestart() {
         super.onRestart();
-        Log.d("onRestart","onRestart2");
+        Log.d("onRestart","onRestart");
     }
 
+    @Override
     protected void onPause() {
         super.onPause();
         Log.d("onPause","onPause");
-
     }
 
+    @Override
     protected void onStop() {
         super.onStop();
         Log.d("onStop","onStop");
     }
 
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         Log.d("onDestroy","onDestroy");
@@ -127,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
             public boolean onScale(ScaleGestureDetector detector) {
                 detectFactor = detector.getScaleFactor();
 
-                Log.d("getTimeDelta()",""+detector.getScaleFactor());
                 return true;
             }
 
@@ -166,8 +168,6 @@ public class MainActivity extends AppCompatActivity {
 
                 // zoom in
                 else if(detectFactor > 1.011) {
-                    Log.d("spanCount= ",""+spanCount);
-                    Log.d("compareSpanCount= ",""+compareSpanCount);
                     if(spanCount == 4 && (compareSpanCount == spanCount)) {
                         spanCount--;
                     }
@@ -265,7 +265,6 @@ public class MainActivity extends AppCompatActivity {
 
             isChecked = !isChecked;
             saveItem.setVisible(isChecked);
-
         }
         else
             super.onBackPressed();
@@ -297,9 +296,17 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.save:
                 Adapter.saveClicked();
+                saveImage();
 
         }
-
         return super.onOptionsItemSelected(item);
     }
+
+    public void saveImage(){
+        for(int j=0; j<urlDataList.size(); j++){
+            if(urlDataList.get(j).getCheckBoxState())
+                Log.d("몇번째가 체크됬어?", ""+j);
+        }
+    }
+
 }

@@ -56,7 +56,6 @@ public class ImagePagerAdapter extends PagerAdapter {
 
             // 만약 urlDataList.size()가 position과 같으면 viewpager, recyclerview 업데이트.
             Glide.with(context)
-                    //.load(urlDataList.get(urlposition + position).getURL())
                     .load(urlDataList.get(position).getURL())
                     .placeholder(new ColorDrawable(Color.BLACK))
                     .into(imageView);
@@ -83,8 +82,8 @@ public class ImagePagerAdapter extends PagerAdapter {
         ((ViewPager)container).removeView((View)object);
     }
 
+    // listener는 PictureDetailActivity
     public void setOnPictureAreaClickedListener (OnPictureAreaClickedListener listener) {
-        Log.d("setOnPictureAreaClicked","setOnPictureAreaClickedListner");
         this.listener = listener;
     }
 
