@@ -71,9 +71,9 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
 
         // intent로 데이터 받아오기.
         Intent intent = getIntent();
-        splitLength = intent.getExtras().getInt("splitLength");
         position = intent.getExtras().getInt("position");
         urlDataList = (ArrayList<URLData>) intent.getSerializableExtra("url");
+        page = intent.getExtras().getInt("page");
         Log.d("urlDataList.size",""+urlDataList.size());
 
         dialog = new ProgressDialog(PictureDetailActivity.this);
@@ -222,7 +222,6 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
     }
 
     private void setURL(){
-        page = urlDataList.size()/(splitLength-1)+1;
         URL = "https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf,rm&page="+page+"&recency=anydate&suppressfamilycorrection=true";
 
         OkHttpClient client = new OkHttpClient();
@@ -266,7 +265,7 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
 
     private void setData(){
         for(int i=0; i<splitLength-1; i++){
-            URLData urlData = new URLData(findURL.get(i),MainActivity.URLNumber++);
+            URLData urlData = new URLData(findURL.get(i));
             urlDataList.add(urlData);
         }
         imagePagerAdapter.notifyDataSetChanged();

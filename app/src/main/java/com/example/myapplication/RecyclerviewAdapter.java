@@ -18,6 +18,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     public boolean checkboxVis = false;
     private int splitLength;
     private RecyclerView recyclerView;
+    int page = 0 ;
 
     public RecyclerviewAdapter(ArrayList<URLData> urlDataList,int splitLength, RecyclerView recyclerView, Context context){
         this.urlDataList = urlDataList;
@@ -73,7 +74,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
                     Intent intent = new Intent(context, PictureDetailActivity.class);
                     intent.putExtra("url", urlDataList);
                     intent.putExtra("position", i);
-                    intent.putExtra("splitLength",splitLength);
+                    intent.putExtra("page",page);
                     context.startActivity(intent);
                 }
             }
@@ -121,5 +122,9 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
         for(int j=0; j<urlDataList.size(); j++){
             urlDataList.get(j).setCheckBoxState(false);
         }
+    }
+
+    public void setPage(int page){
+        this.page = page;
     }
 }

@@ -26,7 +26,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-    public static int URLNumber = 1;
     private  ArrayList<String> findURL;
 
     // page를 넘겨주기 위한 변수(page), 스크롤 시 한번만 내리게 하기 위한 변수(comparePage) , 처음 시작해서 setURL을 하면 둘의 숫자가 같아짐.
@@ -248,9 +247,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void setData(){
         for(int i=0; i<splitLength-1; i++){
-            URLData urlData = new URLData(findURL.get(i),URLNumber++);
+            URLData urlData = new URLData(findURL.get(i));
             urlDataList.add(urlData);
         }
+        Adapter.setPage(page);
         Adapter.notifyDataSetChanged();
     }
 
@@ -305,5 +305,4 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("몇번째가 체크됬어?", ""+j);
         }
     }
-
 }
