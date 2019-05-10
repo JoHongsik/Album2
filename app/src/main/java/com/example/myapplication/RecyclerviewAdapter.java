@@ -14,13 +14,13 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
-public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapter.ImgViewHolder>{
+public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapter.ImgViewHolder> {
     public ArrayList<URLData> urlDataList;
     public Context context;
     public boolean checkboxVis = false;
-    int page = 0 ;
+    int page = 0;
 
-    public RecyclerviewAdapter(ArrayList<URLData> urlDataList, Context context){
+    public RecyclerviewAdapter(ArrayList<URLData> urlDataList, Context context) {
         this.urlDataList = urlDataList;
         this.context = context;
     }
@@ -28,7 +28,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     @NonNull
     @Override
     public ImgViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_recyclerview,viewGroup,false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_recyclerview, viewGroup, false);
         return new ImgViewHolder(view);
     }
 
@@ -37,10 +37,9 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     public void onBindViewHolder(@NonNull ImgViewHolder ViewHolder, int i) {
         ViewHolder.checkBox.setChecked(urlDataList.get(i).getCheckBoxState());
 
-        if(checkboxVis) {
+        if (checkboxVis) {
             ViewHolder.checkBox.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             ViewHolder.checkBox.setVisibility(View.GONE);
         }
 
@@ -64,16 +63,15 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
         ViewHolder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkboxVis){
+                if (checkboxVis) {
                     urlDataList.get(i).setCheckBoxState(!urlDataList.get(i).getCheckBoxState()); //urldataList의 i번째 boolean state가 false이면
                     ViewHolder.checkBox.setChecked(urlDataList.get(i).getCheckBoxState());
-                }
-                else{
+                } else {
                     Intent intent = new Intent(context, PictureDetailActivity.class);
                     intent.putExtra("url", urlDataList);
                     intent.putExtra("position", i);
-                    intent.putExtra("page",page);
-                    ((Activity)context).startActivityForResult(intent,3000);
+                    intent.putExtra("page", page);
+                    ((Activity) context).startActivityForResult(intent, 3000);
                 }
             }
         });
@@ -86,18 +84,19 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     }
 
     // v에 존재하는 위젯들을 바인딩.
-    class ImgViewHolder extends RecyclerView.ViewHolder{
+    class ImgViewHolder extends RecyclerView.ViewHolder {
         public ImageView imageView;
         public CheckBox checkBox;
-        public ImgViewHolder(View v){
+
+        public ImgViewHolder(View v) {
             super(v);
             imageView = (ImageView) v.findViewById(R.id.ImageView);
             checkBox = (CheckBox) v.findViewById(R.id.checkbox);
         }
     }
 
-    public void settingClicked(){
-        if(checkboxVis == false)
+    public void settingClicked() {
+        if (checkboxVis == false)
             checkboxVis = true;
         else
             checkboxVis = false;
@@ -106,22 +105,21 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     }
 
     // 추가버튼 눌렀을 때 이벤트
-    public void saveClicked(){
-        for(int j=0; j<urlDataList.size(); j++){
+    public void saveClicked() {
+        for (int j = 0; j < urlDataList.size(); j++) {
 
         }
     }
 
     // 체크된거 리셋하기
-    public void setCheckedNull(){
-        for(int j=0; j<urlDataList.size(); j++){
+    public void setCheckedNull() {
+        for (int j = 0; j < urlDataList.size(); j++) {
             urlDataList.get(j).setCheckBoxState(false);
         }
     }
 
-    public void setPage(int page){
+    public void setPage(int page) {
         this.page = page;
     }
-
 
 }
