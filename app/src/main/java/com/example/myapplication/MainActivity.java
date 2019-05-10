@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(!recyclerView.canScrollVertically(1)){
-                    URL = "https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf,rm&page="+page+"&recency=anydate&suppressfamilycorrection=true";
+                    URL = String.format("https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf,rm&page=%d&recency=anydate&suppressfamilycorrection=true",page);
                     dialog.show();
 
                     // scroll을 여러번해서 page가 두번이상 넘어가는것을 방지하기 위한 if문

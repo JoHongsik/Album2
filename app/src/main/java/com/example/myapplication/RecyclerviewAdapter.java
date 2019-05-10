@@ -110,9 +110,6 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     public void saveClicked(){
         for(int j=0; j<urlDataList.size(); j++){
 
-
-            /*if(urlDataList.get(j).getCheckBoxState())
-                Log.d("몇번째가 체크됬어?", ""+j);*/
         }
     }
 
