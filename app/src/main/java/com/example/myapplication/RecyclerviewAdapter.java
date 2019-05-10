@@ -18,7 +18,6 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     public ArrayList<URLData> urlDataList;
     public Context context;
     public boolean checkboxVis = false;
-
     int page = 0 ;
 
     public RecyclerviewAdapter(ArrayList<URLData> urlDataList, Context context){

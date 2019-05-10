@@ -266,7 +266,11 @@ public class MainActivity extends AppCompatActivity {
             urlDataList.add(urlData);
         }
         adapter.setPage(page);
-        adapter.notifyDataSetChanged();
+        if(page==2)
+            adapter.notifyDataSetChanged();
+        else
+            adapter.notifyItemRangeInserted(urlDataList.size()-(splitLength-1), splitLength-1);
+
     }
 
     @Override
