@@ -21,7 +21,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ImgViewHolder> {
     public Adapter(ArrayList<URLData> urlDataList, Context context){
         this.urlDataList = urlDataList;
         this.context = context;
-        CheckedNo = new ArrayList<>();
+        CheckedNo = new ArrayList<>();  // test
     }
 
     @NonNull
