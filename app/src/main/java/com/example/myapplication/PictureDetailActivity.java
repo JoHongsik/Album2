@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -39,6 +40,7 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
     private ViewPager viewpager;
     private ImagePagerAdapter imagePagerAdapter;
     private int position;
+    private int currentPosition;
     public ImageButton close_btn;
     public ImageButton save_btn;
     public ImageButton share_btn;
@@ -51,9 +53,16 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
     private boolean setURLflag = true;
     public String findString = "asset__thumb\"";
     private int page = 0;
+
     public String URL =
             "https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf,rm&page="+page+"&recency=anydate&suppressfamilycorrection=true";
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("PictureDetailStoped","PictureDetailStoped"+page);
+    }
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.imageviewpager);
@@ -74,7 +83,7 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         position = intent.getExtras().getInt("position");
         urlDataList = (ArrayList<URLData>) intent.getSerializableExtra("url");
         page = intent.getExtras().getInt("page");
-        Log.d("urlDataList.size",""+urlDataList.size());
+
 
         dialog = new ProgressDialog(PictureDetailActivity.this);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -128,7 +137,9 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
             @Override
             //현재 페이지(i)가 urldataList의 끝이고 && 완전히 다 보이는 상태라면 (i1 == 0)
             public void onPageScrolled(int i, float positionOffset, int i1) {
+                currentPosition = i;
                 if (i == (urlDataList.size()-1) && i1==0){
+                    // MainActivity의 recyclerview 업데이트
                     dialog.show();
                     if(setURLflag) {
                         setURLflag = false;
@@ -273,6 +284,7 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         viewpager.setCurrentItem(urlDataList.size()-splitLength);
 
         setURLflag = true;
+        page++;
         dialog.dismiss();
     }
 
@@ -289,6 +301,15 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
             share_btn.setVisibility(View.VISIBLE);
             save_btn.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("page",page);
+        resultIntent.putExtra("currentPosition",currentPosition);
+        setResult(RESULT_OK,resultIntent);
+        super.onBackPressed();
     }
 }
 

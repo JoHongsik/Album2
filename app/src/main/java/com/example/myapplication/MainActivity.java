@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -65,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean isChecked = false;  //isChecked가 false이면 toolbar에 사진 저장하기 버튼이 없음.
     private MenuItem saveItem;
 
+    private int currentPosition;
+
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -116,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.setCancelable(false);
 
         // recyclerview setting
-        //setRecyclerView();
+        setRecyclerView();
 
         // 크롤링해온 URL값 setting 후 view refresh
         setURL();
@@ -153,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                 scaleGestureDetector.onTouchEvent(event);
 
                 // zoom out
-                if(detectFactor < 0.995) {
+                if(detectFactor < 0.96) {
                     if(spanCount == 3 && (compareSpanCount == spanCount)) {
                         spanCount++;
                     }
@@ -163,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // zoom in
-                else if(detectFactor > 1.011) {
+                else if(detectFactor > 1.02) {
                     if(spanCount == 4 && (compareSpanCount == spanCount)) {
                         spanCount--;
                     }
@@ -183,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 if(!recyclerView.canScrollVertically(1)){
                     URL = "https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf,rm&page="+page+"&recency=anydate&suppressfamilycorrection=true";
                     dialog.show();
+
                     // scroll을 여러번해서 page가 두번이상 넘어가는것을 방지하기 위한 if문
                     if(comparePage == page) {
                         comparePage++;
@@ -195,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setRecyclerView(){
         recyclerView.setHasFixedSize(true);
-        Adapter = new RecyclerviewAdapter(urlDataList, splitLength , recyclerView, this);
+        Adapter = new RecyclerviewAdapter(urlDataList, this);
         layoutManager = new GridLayoutManager(this,spanCount);
 
         recyclerView.setAdapter(Adapter);
@@ -237,7 +241,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         page++;
-                        setRecyclerView();
                         setData();
                     }
                 });
@@ -303,6 +306,18 @@ public class MainActivity extends AppCompatActivity {
         for(int j=0; j<urlDataList.size(); j++){
             if(urlDataList.get(j).getCheckBoxState())
                 Log.d("몇번째가 체크됬어?", ""+j);
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(resultCode == RESULT_OK){
+            switch (requestCode){
+                case 3000:
+                    this.page = data.getExtras().getInt("page");
+                    this.currentPosition = data.getExtras().getInt("currentPosition");
+                    comparePage = page;
+                    recyclerView.smoothScrollToPosition(currentPosition);
+            }
         }
     }
 }

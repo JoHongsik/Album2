@@ -1,9 +1,11 @@
 package com.example.myapplication;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +18,11 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     public ArrayList<URLData> urlDataList;
     public Context context;
     public boolean checkboxVis = false;
-    private int splitLength;
-    private RecyclerView recyclerView;
+
     int page = 0 ;
 
-    public RecyclerviewAdapter(ArrayList<URLData> urlDataList,int splitLength, RecyclerView recyclerView, Context context){
+    public RecyclerviewAdapter(ArrayList<URLData> urlDataList, Context context){
         this.urlDataList = urlDataList;
-        this.splitLength = splitLength;
-        this.recyclerView = recyclerView;
         this.context = context;
     }
 
@@ -75,7 +74,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
                     intent.putExtra("url", urlDataList);
                     intent.putExtra("position", i);
                     intent.putExtra("page",page);
-                    context.startActivity(intent);
+                    ((Activity)context).startActivityForResult(intent,3000);
                 }
             }
         });
@@ -127,4 +126,6 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     public void setPage(int page){
         this.page = page;
     }
+
+
 }
