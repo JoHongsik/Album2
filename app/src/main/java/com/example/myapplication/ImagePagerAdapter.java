@@ -2,7 +2,6 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Picture;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
@@ -52,7 +51,7 @@ public class ImagePagerAdapter extends PagerAdapter {
             });
 
             // viewpage에서 보고있는곳으로 scroll
-            MainActivity.recyclerView.smoothScrollToPosition(position);
+            //MainActivity.recyclerView.smoothScrollToPosition(position);
 
             // 만약 urlDataList.size()가 position과 같으면 viewpager, recyclerview 업데이트.
             Glide.with(context)

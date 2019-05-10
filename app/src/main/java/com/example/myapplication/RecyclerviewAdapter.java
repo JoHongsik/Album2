@@ -12,16 +12,18 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
-public class Adapter extends RecyclerView.Adapter<Adapter.ImgViewHolder> {
+public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapter.ImgViewHolder>{
     public ArrayList<URLData> urlDataList;
     public Context context;
     public boolean checkboxVis = false;
-    public ArrayList<Integer> CheckedNo;
+    private int splitLength;
+    private RecyclerView recyclerView;
 
-    public Adapter(ArrayList<URLData> urlDataList, Context context){
+    public RecyclerviewAdapter(ArrayList<URLData> urlDataList,int splitLength, RecyclerView recyclerView, Context context){
         this.urlDataList = urlDataList;
+        this.splitLength = splitLength;
+        this.recyclerView = recyclerView;
         this.context = context;
-        CheckedNo = new ArrayList<>();  // test
     }
 
     @NonNull
@@ -48,10 +50,9 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ImgViewHolder> {
                 .into(ViewHolder.imageView);
 
 
-
         ViewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
-            // Adapter -> setOnCheckedChangeListener를 사용하면
+            // RecyclerviewAdapter -> setOnCheckedChangeListener를 사용하면
             // notify를 하면 원래 체크박스들을 uncheck함
             // 그래서 그냥 setOnClickListener를 사용 함.
             public void onClick(View v) {
@@ -72,6 +73,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ImgViewHolder> {
                     Intent intent = new Intent(context, PictureDetailActivity.class);
                     intent.putExtra("url", urlDataList);
                     intent.putExtra("position", i);
+                    intent.putExtra("splitLength",splitLength);
                     context.startActivity(intent);
                 }
             }
@@ -107,9 +109,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ImgViewHolder> {
     // 추가버튼 눌렀을 때 이벤트
     public void saveClicked(){
         for(int j=0; j<urlDataList.size(); j++){
-
-
-
 
 
             /*if(urlDataList.get(j).getCheckBoxState())

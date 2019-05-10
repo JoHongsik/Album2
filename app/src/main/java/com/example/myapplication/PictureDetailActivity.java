@@ -35,8 +35,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static com.example.myapplication.MainActivity.URL;
-
 public class PictureDetailActivity extends Activity implements OnPictureAreaClickedListener {
     private ViewPager viewpager;
     private ImagePagerAdapter imagePagerAdapter;
@@ -51,6 +49,10 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
     private  ArrayList<String> findURL;
     private ProgressDialog dialog;
     private boolean setURLflag = true;
+    public String findString = "asset__thumb\"";
+    private int page = 0;
+    public String URL =
+            "https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf,rm&page="+page+"&recency=anydate&suppressfamilycorrection=true";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,21 +61,26 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         // Remove notification bar
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+
         // widzet들 선언.
         viewpager = (ViewPager) findViewById(R.id.viewPager);
         close_btn = (ImageButton) findViewById(R.id.close_btn);
         save_btn = (ImageButton) findViewById(R.id.save_btn);
         share_btn = (ImageButton) findViewById(R.id.share_btn);
 
+
         // intent로 데이터 받아오기.
         Intent intent = getIntent();
+        splitLength = intent.getExtras().getInt("splitLength");
         position = intent.getExtras().getInt("position");
         urlDataList = (ArrayList<URLData>) intent.getSerializableExtra("url");
+        Log.d("urlDataList.size",""+urlDataList.size());
 
         dialog = new ProgressDialog(PictureDetailActivity.this);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.setMessage("Data Loading..");
         dialog.setCancelable(false);
+
 
         //close_btn 클릭시 detail페이지 나가기.
         close_btn.setOnClickListener(new View.OnClickListener() {
@@ -215,8 +222,10 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
     }
 
     private void setURL(){
+        page = urlDataList.size()/(splitLength-1)+1;
+        URL = "https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf,rm&page="+page+"&recency=anydate&suppressfamilycorrection=true";
+
         OkHttpClient client = new OkHttpClient();
-        Log.d("setURL","setURL");
         Request request = new Request.Builder()
                 .url(URL)
                 .build();
@@ -233,13 +242,13 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
 
                 result = response.body().string();
 
-                splitLength = (result.split(MainActivity.findString).length);  // 찾는 문자열의 개수 저장.
+                splitLength = (result.split(findString).length);  // 찾는 문자열의 개수 저장.
 
                 findURL = new ArrayList<>();
                 String[] findURL1 = new String[splitLength]; // String.split한 배열을 저장하기 위한 배열 선언 (사이즈 61)
-                findURL1 = result.split((MainActivity.findString));
+                findURL1 = result.split(findString);
 
-                if (result.contains(MainActivity.findString)) {
+                if (result.contains(findString)) {
                     for (int i = 1; i < splitLength; i++)
                         findURL.add(findURL1[i].split("\"")[1]);
                 }

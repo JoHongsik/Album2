@@ -10,15 +10,12 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.widget.Toast;
-
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -32,19 +29,19 @@ public class MainActivity extends AppCompatActivity {
     public static int URLNumber = 1;
     private  ArrayList<String> findURL;
 
-    // page를 넘겨주기 위한 변수(page), 스크롤 시 한번만 내리게 하기 위한 변수(comparePage)
-    public static int page = 1;
+    // page를 넘겨주기 위한 변수(page), 스크롤 시 한번만 내리게 하기 위한 변수(comparePage) , 처음 시작해서 setURL을 하면 둘의 숫자가 같아짐.
+    public int page = 1;
     public int comparePage = 2;
 
     // RecyclerView를 만들기 위한 변수들
-    public static RecyclerView recyclerView;
-    private Adapter Adapter;
+    public RecyclerView recyclerView;
+    private RecyclerviewAdapter Adapter;
     private RecyclerView.LayoutManager layoutManager;
 
     // url주소와 Split하기 위한 string 변수
-    public static String URL =
+    public String URL =
             "https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf,rm&page="+page+"&recency=anydate&suppressfamilycorrection=true";
-    public static final String findString = "asset__thumb\"";
+    public String findString = "asset__thumb\"";
 
     // 가져온 페이지 소스를 저장할 string 변수
     private String result;
@@ -106,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //화면 세로로 고정
-       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         //adpater에 보낼 arrayList (이미지의 url값들이 들어있는 arrayList)
         urlDataList = new ArrayList<>();
@@ -120,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.setCancelable(false);
 
         // recyclerview setting
-        setRecyclerView();
+        //setRecyclerView();
 
         // 크롤링해온 URL값 setting 후 view refresh
         setURL();
@@ -199,8 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setRecyclerView(){
         recyclerView.setHasFixedSize(true);
-
-        Adapter = new Adapter(urlDataList,this);
+        Adapter = new RecyclerviewAdapter(urlDataList, splitLength , recyclerView, this);
         layoutManager = new GridLayoutManager(this,spanCount);
 
         recyclerView.setAdapter(Adapter);
@@ -242,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         page++;
+                        setRecyclerView();
                         setData();
                     }
                 });

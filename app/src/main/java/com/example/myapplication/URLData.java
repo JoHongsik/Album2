@@ -10,7 +10,6 @@ public class URLData implements Serializable {
     public URLData(String URL, int URLNumber){
         this.URL = URL;
         this.URLNumber = URLNumber;
-
     }
 
     public String getURL() {
