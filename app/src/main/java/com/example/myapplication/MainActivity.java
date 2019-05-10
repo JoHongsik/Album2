@@ -204,8 +204,6 @@ public class MainActivity extends AppCompatActivity {
         adapter = new RecyclerviewAdapter(urlDataList, this);
         layoutManager = new GridLayoutManager(this,spanCount);
 
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(layoutManager);
     }
 
     private void setURL(){
@@ -266,10 +264,13 @@ public class MainActivity extends AppCompatActivity {
             urlDataList.add(urlData);
         }
         adapter.setPage(page);
-        if(page==2)
-            adapter.notifyDataSetChanged();
+        if(page==2) {
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(layoutManager);
+        }
         else
             adapter.notifyItemRangeInserted(urlDataList.size()-(splitLength-1), splitLength-1);
+
 
     }
 
