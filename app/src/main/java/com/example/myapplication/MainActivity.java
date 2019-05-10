@@ -17,6 +17,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.Toast;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -35,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     // RecyclerView를 만들기 위한 변수들
     public RecyclerView recyclerView;
-    private RecyclerviewAdapter Adapter;
+    private RecyclerviewAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
     // url주소와 Split하기 위한 string 변수
@@ -142,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 if(compareSpanCount!=spanCount) {
                     layoutManager = new GridLayoutManager(MainActivity.this, spanCount);
                     recyclerView.setLayoutManager(layoutManager);
-                    Adapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
                     compareSpanCount = spanCount;
                 }
             }
@@ -199,10 +201,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void setRecyclerView(){
         recyclerView.setHasFixedSize(true);
-        Adapter = new RecyclerviewAdapter(urlDataList, this);
+        adapter = new RecyclerviewAdapter(urlDataList, this);
         layoutManager = new GridLayoutManager(this,spanCount);
 
-        recyclerView.setAdapter(Adapter);
+        recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
     }
 
@@ -216,11 +218,22 @@ public class MainActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                dialog.dismiss();
+                comparePage = page;
+                Log.d("onFailure",e.getMessage());
 
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "인터넷 연결을 해주세요!", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+
+                Log.d("onResponse","onResponse"+page);
 
                 result = response.body().string();
 
@@ -233,35 +246,34 @@ public class MainActivity extends AppCompatActivity {
                 if (result.contains(findString)) {
                     for (int i = 1; i < splitLength; i++)
                         findURL.add(findURL1[i].split("\"")[1]);
-
                 }
                 dialog.dismiss();
 
                 MainActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        page++;
-                        setData();
-                    }
-                });
-            }
+        @Override
+        public void run() {
+            page++;
+            setData();
+        }
+    });
+}
         });
-    }
+                }
 
     private void setData(){
         for(int i=0; i<splitLength-1; i++){
             URLData urlData = new URLData(findURL.get(i));
             urlDataList.add(urlData);
         }
-        Adapter.setPage(page);
-        Adapter.notifyDataSetChanged();
+        adapter.setPage(page);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
     public void onBackPressed() {
         if(isChecked) {
-            Adapter.settingClicked();
-            Adapter.setCheckedNull();
+            adapter.settingClicked();
+            adapter.setCheckedNull();
 
             isChecked = !isChecked;
             saveItem.setVisible(isChecked);
@@ -286,16 +298,16 @@ public class MainActivity extends AppCompatActivity {
                 if(isChecked) {
                     isChecked = false;
                     saveItem.setVisible(isChecked);
-                    Adapter.setCheckedNull();
+                    adapter.setCheckedNull();
                 }
                 else {
                     isChecked = true;
                     saveItem.setVisible(isChecked);
                 }
-                    Adapter.settingClicked();
+                    adapter.settingClicked();
                 return true;
             case R.id.save:
-                Adapter.saveClicked();
+                adapter.saveClicked();
                 saveImage();
 
         }
