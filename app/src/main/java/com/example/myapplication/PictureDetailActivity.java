@@ -233,7 +233,8 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
     }
 
     private void setURL(){
-        URL = String.format("https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf,rm&page=%d&recency=anydate&suppressfamilycorrection=true",page);
+        URL = String.format("https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf," +
+                "rm&page=%d&recency=anydate&suppressfamilycorrection=true",page);
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()

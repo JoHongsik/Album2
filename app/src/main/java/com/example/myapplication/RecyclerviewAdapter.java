@@ -39,7 +39,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
         ViewHolder.checkBox.setChecked(urlDataList.get(i).getCheckBoxState());
         urlDataList.get(i).setURLNo(i);
 
-        Log.d("onBindViewHolder","onBindViewHolder");
+        Log.d("adsf",""+ViewHolder.imageView.getMeasuredHeight());
 
         if (checkboxVis) {
             ViewHolder.checkBox.setVisibility(View.VISIBLE);
@@ -47,9 +47,18 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
             ViewHolder.checkBox.setVisibility(View.GONE);
         }
 
-        Glide.with(context)
-                .load(urlDataList.get(i).getURL())
-                .into(ViewHolder.imageView);
+        ViewHolder.imageView.getHeight();
+
+        if(ViewHolder.imageView.getMeasuredHeight()==0)
+            Glide.with(context)
+                    .load(urlDataList.get(i).getURL())
+                    .into(ViewHolder.imageView);
+        else
+            Glide.with(context)
+                    .load(urlDataList.get(i).getURL())
+                    .override(ViewHolder.imageView.getMeasuredWidth(),ViewHolder.imageView.getMeasuredHeight())
+                    .into(ViewHolder.imageView);
+
 
     }
 
@@ -67,10 +76,10 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
         public ImgViewHolder(View v) {
             super(v);
 
-            Log.d("ImgViewHolder called","ImgViewHolder called");
-
             imageView = (ImageView) v.findViewById(R.id.ImageView);
             checkBox = (CheckBox) v.findViewById(R.id.checkbox);
+
+            Log.d("ImgViewHolder called","ImgViewHolder called");
 
             checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
