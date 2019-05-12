@@ -18,7 +18,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     public ArrayList<URLData> urlDataList;
     public Context context;
     public boolean checkboxVis = false;
-    int page = 0;
+    private int page = 0;
 
     public RecyclerviewAdapter(ArrayList<URLData> urlDataList, Context context) {
         this.urlDataList = urlDataList;
@@ -29,6 +29,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     @Override
     public ImgViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_recyclerview, viewGroup, false);
+        Log.d("ImgViewHolder","ImgViewHolder");
         return new ImgViewHolder(view);
     }
 
@@ -36,6 +37,9 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     @Override
     public void onBindViewHolder(@NonNull ImgViewHolder ViewHolder, int i) {
         ViewHolder.checkBox.setChecked(urlDataList.get(i).getCheckBoxState());
+        urlDataList.get(i).setURLNo(i);
+
+        Log.d("onBindViewHolder","onBindViewHolder");
 
         if (checkboxVis) {
             ViewHolder.checkBox.setVisibility(View.VISIBLE);
@@ -47,34 +51,6 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
                 .load(urlDataList.get(i).getURL())
                 .into(ViewHolder.imageView);
 
-
-        ViewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            // RecyclerviewAdapter -> setOnCheckedChangeListener를 사용하면
-            // notify를 하면 원래 체크박스들을 uncheck함
-            // 그래서 그냥 setOnClickListener를 사용 함.
-            public void onClick(View v) {
-                urlDataList.get(i).setCheckBoxState(ViewHolder.checkBox.isChecked());
-                ViewHolder.checkBox.setChecked(ViewHolder.checkBox.isChecked());
-            }
-        });
-
-        // imageview 버튼을 누르면 checkbox도 체크.
-        ViewHolder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (checkboxVis) {
-                    urlDataList.get(i).setCheckBoxState(!urlDataList.get(i).getCheckBoxState()); //urldataList의 i번째 boolean state가 false이면
-                    ViewHolder.checkBox.setChecked(urlDataList.get(i).getCheckBoxState());
-                } else {
-                    Intent intent = new Intent(context, PictureDetailActivity.class);
-                    intent.putExtra("url", urlDataList);
-                    intent.putExtra("position", i);
-                    intent.putExtra("page", page);
-                    ((Activity) context).startActivityForResult(intent, 3000);
-                }
-            }
-        });
     }
 
     // 데이터의 크기를 리턴
@@ -90,8 +66,39 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
 
         public ImgViewHolder(View v) {
             super(v);
+
+            Log.d("ImgViewHolder called","ImgViewHolder called");
+
             imageView = (ImageView) v.findViewById(R.id.ImageView);
             checkBox = (CheckBox) v.findViewById(R.id.checkbox);
+
+            checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            // RecyclerviewAdapter -> setOnCheckedChangeListener를 사용하면
+            // notify를 하면 원래 체크박스들을 uncheck함
+            // 그래서 그냥 setOnClickListener를 사용 함.
+            public void onClick(View v) {
+                urlDataList.get(getAdapterPosition()).setCheckBoxState(checkBox.isChecked());
+                checkBox.setChecked(checkBox.isChecked());
+            }
+        });
+
+        // imageview 버튼을 누르면 checkbox도 체크.
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkboxVis) {
+                    urlDataList.get(getAdapterPosition()).setCheckBoxState(!urlDataList.get(getAdapterPosition()).getCheckBoxState()); //urldataList의 i번째 boolean state가 false이면
+                    checkBox.setChecked(urlDataList.get(getAdapterPosition()).getCheckBoxState());
+                } else {
+                    Intent intent = new Intent(context, PictureDetailActivity.class);
+                    intent.putExtra("url", urlDataList);
+                    intent.putExtra("position", getAdapterPosition());
+                    intent.putExtra("page", page);
+                    ((Activity) context).startActivityForResult(intent, 3000);
+                }
+            }
+        });
         }
     }
 

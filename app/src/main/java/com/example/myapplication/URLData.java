@@ -5,6 +5,15 @@ import java.io.Serializable;
 public class URLData implements Serializable {
     private String URL;
     private boolean checkBoxState;
+    private int URLNo;
+
+    public int getURLNo() {
+        return URLNo;
+    }
+
+    public void setURLNo(int URLNo) {
+        this.URLNo = URLNo;
+    }
 
     public URLData(String URL){
         this.URL = URL;
