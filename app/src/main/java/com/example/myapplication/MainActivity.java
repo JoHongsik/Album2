@@ -1,12 +1,13 @@
 package com.example.myapplication;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -60,8 +62,6 @@ public class MainActivity extends AppCompatActivity {
     private int spanCount = 3;
     private int compareSpanCount = 3;   // spanCount를 한번만 가져오기 위한 변수.
 
-    //dialog
-    private ProgressDialog dialog;
 
     //toolbar 관련 변수들
     private Toolbar toolbar;
@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
     private MenuItem saveItem;
 
     private int currentPosition;
+
+    private ProgressBar progressBar;
 
     @Override
     protected void onRestart() {
@@ -114,11 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
 
-        //progress dialog 설정
-        dialog = new ProgressDialog(MainActivity.this);
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.setMessage("Data Loading..");
-        dialog.setCancelable(false);
+        progressBar = (ProgressBar) findViewById(R.id.progressbar);
 
         // recyclerview setting
         setRecyclerView();
@@ -180,15 +178,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // recyclerview 끝지점시 listener -> Progress dialog -> setURL 및 recyclerview 데이터 업데이트
+        // recyclerview 끝지점시 listener -> Progressbar -> setURL 및 recyclerview 데이터 업데이트
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(!recyclerView.canScrollVertically(1)){
                     URL = String.format("https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf," +
                             "rm&page=%d&recency=anydate&suppressfamilycorrection=true",page);
-                    dialog.show();
 
                     // scroll을 여러번해서 page가 두번이상 넘어가는것을 방지하기 위한 if문
                     if(comparePage == page) {
@@ -202,13 +200,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void setRecyclerView(){
         recyclerView.setHasFixedSize(true);
-
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         adapter = new RecyclerviewAdapter(urlDataList, this);
         layoutManager = new GridLayoutManager(this,spanCount);
 
     }
 
     private void setURL(){
+        progressBar.setVisibility(View.VISIBLE);
+
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(URL)
@@ -218,7 +218,8 @@ public class MainActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                dialog.dismiss();
+
+                progressBar.setVisibility(View.GONE);
                 comparePage = page;
                 Log.d("onFailure",e.getMessage());
 
@@ -247,13 +248,15 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 1; i < splitLength; i++)
                         findURL.add(findURL1[i].split("\"")[1]);
                 }
-                dialog.dismiss();
+
 
                 MainActivity.this.runOnUiThread(new Runnable() {
         @Override
         public void run() {
+            progressBar.setVisibility(View.GONE);
             page++;
             setData();
+
         }
     });
 }
@@ -270,9 +273,10 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(layoutManager);
         }
-        else
+        else{
             adapter.notifyItemRangeInserted(urlDataList.size()-(splitLength-1), splitLength-1);
-
+            recyclerView.smoothScrollToPosition(urlDataList.size()-(splitLength-1));
+        }
 
     }
 

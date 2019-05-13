@@ -25,11 +25,18 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
         this.context = context;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if(urlDataList.get(position)!=null)
+            return 1;
+        else
+            return 0;
+    }
+
     @NonNull
     @Override
     public ImgViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_recyclerview, viewGroup, false);
-        Log.d("ImgViewHolder","ImgViewHolder");
         return new ImgViewHolder(view);
     }
 
