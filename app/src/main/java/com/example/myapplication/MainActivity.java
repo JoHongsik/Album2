@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     // 가져온 페이지 소스를 저장할 string 변수
     private String result;
 
+    private String FileName;
+
     // 사진이 들어있는 url을 저장하고 있는 List
     public ArrayList<URLData> urlDataList;
 
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private int currentPosition;
 
     private ProgressBar progressBar;
+
 
     @Override
     protected void onRestart() {
@@ -185,14 +188,14 @@ public class MainActivity extends AppCompatActivity {
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(!recyclerView.canScrollVertically(1)){
-                    URL = String.format("https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf," +
-                            "rm&page=%d&recency=anydate&suppressfamilycorrection=true",page);
+                        URL = String.format("https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf," +
+                                "rm&page=%d&recency=anydate&suppressfamilycorrection=true",page);
 
-                    // scroll을 여러번해서 page가 두번이상 넘어가는것을 방지하기 위한 if문
-                    if(comparePage == page) {
-                        comparePage++;
-                        setURL();
-                    }
+                        // scroll을 여러번해서 page가 두번이상 넘어가는것을 방지하기 위한 if문
+                        if(comparePage == page) {
+                            comparePage++;
+                            setURL();
+                        }
                 }
             }
         });
@@ -256,7 +259,6 @@ public class MainActivity extends AppCompatActivity {
             progressBar.setVisibility(View.GONE);
             page++;
             setData();
-
         }
     });
 }
@@ -268,16 +270,18 @@ public class MainActivity extends AppCompatActivity {
             URLData urlData = new URLData(findURL.get(i));
             urlDataList.add(urlData);
         }
+
         adapter.setPage(page);
+
         if(page==2) {
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(layoutManager);
         }
+
         else{
             adapter.notifyItemRangeInserted(urlDataList.size()-(splitLength-1), splitLength-1);
-            recyclerView.smoothScrollToPosition(urlDataList.size()-(splitLength-1));
+            //recyclerView.smoothScrollToPosition(urlDataList.size()-(splitLength-1));
         }
-
     }
 
     @Override

@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -53,6 +54,7 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
     private boolean setURLflag = true;
     public String findString = "asset__thumb\"";
     private int page = 0;
+    private TextView FileNametxt;
 
     public String URL =
             "https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf,rm&page="+page+"&recency=anydate&suppressfamilycorrection=true";
@@ -76,6 +78,7 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         close_btn = (ImageButton) findViewById(R.id.close_btn);
         save_btn = (ImageButton) findViewById(R.id.save_btn);
         share_btn = (ImageButton) findViewById(R.id.share_btn);
+        FileNametxt = (TextView) findViewById(R.id.filename_txt);
 
 
         // intent로 데이터 받아오기.
@@ -84,6 +87,7 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         urlDataList = (ArrayList<URLData>) intent.getSerializableExtra("url");
         page = intent.getExtras().getInt("page");
 
+        setFileName(position);
 
         dialog = new ProgressDialog(PictureDetailActivity.this);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -127,7 +131,7 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
             }
         });
 
-        imagePagerAdapter = new ImagePagerAdapter(this, urlDataList, position);
+        imagePagerAdapter = new ImagePagerAdapter(this, urlDataList, position,FileNametxt);
         imagePagerAdapter.setOnPictureAreaClickedListener(this);
 
         viewpager.setAdapter(imagePagerAdapter);
@@ -291,16 +295,18 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
 
     // ImagePagerAdapter에서 콜백을 날림.
     @Override
-    public void onPictureAreaClicked() {
+    public void onPictureAreaClicked(int position) {
         if(close_btn.getVisibility() == View.VISIBLE) {
            close_btn.setVisibility(View.INVISIBLE);
             share_btn.setVisibility(View.INVISIBLE);
             save_btn.setVisibility(View.INVISIBLE);
+            FileNametxt.setVisibility(View.INVISIBLE);
         }
         else{
             close_btn.setVisibility(View.VISIBLE);
             share_btn.setVisibility(View.VISIBLE);
             save_btn.setVisibility(View.VISIBLE);
+            FileNametxt.setVisibility(View.VISIBLE);
         }
     }
 
@@ -311,6 +317,10 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         resultIntent.putExtra("currentPosition",currentPosition);
         setResult(RESULT_OK,resultIntent);
         super.onBackPressed();
+    }
+
+    public void setFileName(int position){
+        FileNametxt.setText(urlDataList.get(position).getFileName());
     }
 }
 

@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
@@ -21,11 +23,13 @@ public class ImagePagerAdapter extends PagerAdapter {
     private ArrayList<URLData> urlDataList;
     private int urlposition;
     private OnPictureAreaClickedListener listener;
+    private TextView filenametxt;
 
-    public ImagePagerAdapter(Context context,ArrayList<URLData> urlDataList, int position ){
+    public ImagePagerAdapter(Context context,ArrayList<URLData> urlDataList, int position ,TextView filenametxt){
         this.context = context;
         this.urlDataList = urlDataList;
         this.urlposition = position;
+        this.filenametxt = filenametxt;
     }
 
     @Override
@@ -37,7 +41,6 @@ public class ImagePagerAdapter extends PagerAdapter {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.activity_picture_detail, container, false);
 
-            // imageView를 클릭하면 여러가지 imageButton이 나옴.
             imageView = (ImageView) view.findViewById(R.id.detailImage2);
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -45,19 +48,19 @@ public class ImagePagerAdapter extends PagerAdapter {
 
                     if(listener != null) {
                         Log.d("ImageView","setOnClickListener");
-                        listener.onPictureAreaClicked();
+                        listener.onPictureAreaClicked(position);
                     }
                 }
             });
-
-            // viewpage에서 보고있는곳으로 scroll
-            //MainActivity.recyclerView.smoothScrollToPosition(position);
 
             // 만약 urlDataList.size()가 position과 같으면 viewpager, recyclerview 업데이트.
             Glide.with(context)
                     .load(urlDataList.get(position).getURL())
                     .placeholder(new ColorDrawable(Color.BLACK))
                     .into(imageView);
+
+            filenametxt.setText(urlDataList.get(position).getFileName());
+
         }
 
         // 뷰페이저에 추가.

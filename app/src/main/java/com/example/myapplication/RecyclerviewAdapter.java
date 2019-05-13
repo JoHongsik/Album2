@@ -11,7 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
+
+import java.io.File;
 import java.util.ArrayList;
 
 public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapter.ImgViewHolder> {
@@ -19,18 +23,11 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     public Context context;
     public boolean checkboxVis = false;
     private int page = 0;
+    private String FileName;
 
     public RecyclerviewAdapter(ArrayList<URLData> urlDataList, Context context) {
         this.urlDataList = urlDataList;
         this.context = context;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if(urlDataList.get(position)!=null)
-            return 1;
-        else
-            return 0;
     }
 
     @NonNull
@@ -46,10 +43,16 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
         ViewHolder.checkBox.setChecked(urlDataList.get(i).getCheckBoxState());
         urlDataList.get(i).setURLNo(i);
 
-        Log.d("adsf",""+ViewHolder.imageView.getMeasuredHeight());
+        //FileName 정하기 (split으로 url이름 잘라서)
+        FileName = urlDataList.get(i).getURL().split("-picture")[0];
+        FileName = FileName.split("/photos/")[1];
+        urlDataList.get(i).setFileName(FileName);
+
+
+        Log.d("adsf",""+((ImgViewHolder)ViewHolder).imageView.getMeasuredHeight());
 
         if (checkboxVis) {
-            ViewHolder.checkBox.setVisibility(View.VISIBLE);
+            ((ImgViewHolder)ViewHolder).checkBox.setVisibility(View.VISIBLE);
         } else {
             ViewHolder.checkBox.setVisibility(View.GONE);
         }
@@ -100,23 +103,24 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
         });
 
         // imageview 버튼을 누르면 checkbox도 체크.
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (checkboxVis) {
-                    urlDataList.get(getAdapterPosition()).setCheckBoxState(!urlDataList.get(getAdapterPosition()).getCheckBoxState()); //urldataList의 i번째 boolean state가 false이면
-                    checkBox.setChecked(urlDataList.get(getAdapterPosition()).getCheckBoxState());
-                } else {
-                    Intent intent = new Intent(context, PictureDetailActivity.class);
-                    intent.putExtra("url", urlDataList);
-                    intent.putExtra("position", getAdapterPosition());
-                    intent.putExtra("page", page);
-                    ((Activity) context).startActivityForResult(intent, 3000);
-                }
-            }
-        });
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                      if (checkboxVis) {
+                          urlDataList.get(getAdapterPosition()).setCheckBoxState(!urlDataList.get(getAdapterPosition()).getCheckBoxState()); //urldataList의 i번째 boolean state가 false이면
+                          checkBox.setChecked(urlDataList.get(getAdapterPosition()).getCheckBoxState());
+                     } else {
+                        Intent intent = new Intent(context, PictureDetailActivity.class);
+                        intent.putExtra("url", urlDataList);
+                        intent.putExtra("position", getAdapterPosition());
+                        intent.putExtra("page", page);
+                        ((Activity) context).startActivityForResult(intent, 3000);
+                     }
+                 }
+                });
         }
     }
+
 
     public void settingClicked() {
         if (checkboxVis == false)

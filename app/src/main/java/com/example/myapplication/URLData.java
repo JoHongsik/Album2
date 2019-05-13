@@ -6,6 +6,15 @@ public class URLData implements Serializable {
     private String URL;
     private boolean checkBoxState;
     private int URLNo;
+    private String FileName;
+
+    public String getFileName() {
+        return FileName;
+    }
+
+    public void setFileName(String fileName) {
+        FileName = fileName;
+    }
 
     public int getURLNo() {
         return URLNo;

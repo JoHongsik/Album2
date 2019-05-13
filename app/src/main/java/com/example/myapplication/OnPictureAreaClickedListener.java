@@ -1,5 +1,5 @@
 package com.example.myapplication;
 
 public interface OnPictureAreaClickedListener {
-    void onPictureAreaClicked();
+    void onPictureAreaClicked(int position);
 }
