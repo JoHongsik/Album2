@@ -5,14 +5,30 @@
     <item
         android:id="@+id/action_settings"
         android:title="선택"
-        app:showAsAction="never"/>
+        app:showAsAction="withText"/>
+
+    <item
+        android:id="@+id/filter1"
+        android:title="popular"
+        app:showAsAction="withText"/>
+
+    <item
+        android:id="@+id/filter2"
+        android:title="Newest"
+        app:showAsAction="withText"/>
+
+    <item
+        android:id="@+id/filter3"
+        android:title="bestMatch"
+        app:showAsAction="withText"/>
 
     <item
         android:id="@+id/save"
         android:visible="false"
         android:title="save"
         android:icon="@drawable/downloadimage"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
+
 
 
 

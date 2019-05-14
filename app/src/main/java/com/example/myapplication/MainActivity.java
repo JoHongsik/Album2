@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -73,10 +74,12 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Integer> seenArray;
 
+    private String kind;
 
     @Override
     protected void onRestart() {
         super.onRestart();
+
         Log.d("onRestart","onRestart2");
     }
 
@@ -110,13 +113,13 @@ public class MainActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        kind = "mostpopular";
+
         //화면 세로로 고정
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         //adpater에 보낼 arrayList (이미지의 url값들이 들어있는 arrayList)
         urlDataList = new ArrayList<>();
-
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
 
         progressBar = (ProgressBar) findViewById(R.id.progressbar);
 
@@ -146,6 +149,36 @@ public class MainActivity extends AppCompatActivity {
                     recyclerView.setLayoutManager(layoutManager);
                     adapter.notifyDataSetChanged();
                     compareSpanCount = spanCount;
+                }
+            }
+        });
+    }
+
+    private void setRecyclerView(){
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        adapter = new RecyclerviewAdapter(this);
+        layoutManager = new GridLayoutManager(this,spanCount);
+
+        // recyclerview 끝지점시 listener -> Progressbar -> setURL 및 recyclerview 데이터 업데이트
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                Log.d("size", ""+urlDataList.size());
+
+                if(!recyclerView.canScrollVertically(1)){
+                    URL = String.format("https://www.gettyimages.com/photos/free?sort=%s&mediatype=photography&phrase=free&license=rf," +
+                            "rm&page=%d&recency=anydate&suppressfamilycorrection=true",kind,page);
+
+                    // scroll을 여러번해서 page가 두번이상 넘어가는것을 방지하기 위한 if문
+                    if(comparePage == page ) {
+                        comparePage++;
+                        setURL();
+                    }
                 }
             }
         });
@@ -179,40 +212,15 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        // recyclerview 끝지점시 listener -> Progressbar -> setURL 및 recyclerview 데이터 업데이트
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-                Log.d("size", ""+urlDataList.size());
-
-                if(!recyclerView.canScrollVertically(1)){
-                        URL = String.format("https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf," +
-                                "rm&page=%d&recency=anydate&suppressfamilycorrection=true",page);
-
-                        // scroll을 여러번해서 page가 두번이상 넘어가는것을 방지하기 위한 if문
-                        if(comparePage == page) {
-                            comparePage++;
-                            setURL();
-                        }
-                }
-            }
-        });
-    }
-
-    private void setRecyclerView(){
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        adapter = new RecyclerviewAdapter(this);
-        layoutManager = new GridLayoutManager(this,spanCount);
-
     }
 
     private void setURL(){
+        Log.d("setURL","setURL");
+
         progressBar.setVisibility(View.VISIBLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -225,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call call, IOException e) {
 
                 progressBar.setVisibility(View.GONE);
-                comparePage = page;
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 Log.d("onFailure",e.getMessage());
 
                 MainActivity.this.runOnUiThread(new Runnable() {
@@ -259,7 +267,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             progressBar.setVisibility(View.GONE);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             page++;
+            comparePage = page;
             setData();
             }
         });
@@ -268,6 +278,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setData(){
+        Log.d("setData","setData");
+
         for(int i=0; i<splitLength-1; i++){
             URLData urlData = new URLData(findURL.get(i));
             urlDataList.add(urlData);
@@ -275,7 +287,9 @@ public class MainActivity extends AppCompatActivity {
 
         adapter.setPage(page);
 
-        if(page==2) {
+        if(page<=2) {
+            Log.d("Page","page"+page);
+            Log.d("Page","page"+comparePage);
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(layoutManager);
         }
@@ -283,8 +297,6 @@ public class MainActivity extends AppCompatActivity {
         else{
             adapter.notifyItemRangeInserted(urlDataList.size()-(splitLength-1), splitLength-1);
         }
-
-
     }
 
     @Override
@@ -323,11 +335,24 @@ public class MainActivity extends AppCompatActivity {
                     saveItem.setVisible(isChecked);
                 }
                     adapter.settingClicked();
-                return true;
+                break;
+
             case R.id.save:
                 adapter.saveClicked();
                 saveImage();
-
+                break;
+            case R.id.filter1:
+                kind = "mostpopular";
+                refresh();
+                break;
+            case R.id.filter2:
+                kind = "newest";
+                refresh();
+                break;
+            case R.id.filter3:
+                kind = "best";
+                refresh();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -361,9 +386,26 @@ public class MainActivity extends AppCompatActivity {
                     for(int j=0; j<seenArray.size(); j++){
                         adapter.notifyItemChanged(seenArray.get(j));
                     }
-
-
             }
         }
+    }
+
+    public void refresh(){
+        seenArray = new ArrayList<>();
+        page = 1;
+        comparePage = 2;
+        spanCount = 3;
+
+        URL = String.format("https://www.gettyimages.com/photos/free?sort=%s&mediatype=photography&phrase=free&license=rf," +
+                "rm&page=%d&recency=anydate&suppressfamilycorrection=true",kind,page);
+
+        currentPosition = 0;
+
+        recyclerView.getRecycledViewPool().clear();
+
+        urlDataList = new ArrayList<>();
+
+        setRecyclerView();
+        setURL();
     }
 }
