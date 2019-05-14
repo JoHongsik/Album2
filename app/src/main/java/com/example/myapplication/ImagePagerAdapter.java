@@ -25,11 +25,10 @@ public class ImagePagerAdapter extends PagerAdapter {
     private OnPictureAreaClickedListener listener;
     private TextView filenametxt;
 
-    public ImagePagerAdapter(Context context,ArrayList<URLData> urlDataList, int position ,TextView filenametxt){
+    public ImagePagerAdapter(Context context,ArrayList<URLData> urlDataList, int position){
         this.context = context;
         this.urlDataList = urlDataList;
         this.urlposition = position;
-        this.filenametxt = filenametxt;
     }
 
     @Override
@@ -42,6 +41,7 @@ public class ImagePagerAdapter extends PagerAdapter {
             view = inflater.inflate(R.layout.activity_picture_detail, container, false);
 
             imageView = (ImageView) view.findViewById(R.id.detailImage2);
+            filenametxt = (TextView) view.findViewById(R.id.filename_txt);
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

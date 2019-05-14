@@ -87,8 +87,6 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         urlDataList = (ArrayList<URLData>) intent.getSerializableExtra("url");
         page = intent.getExtras().getInt("page");
 
-        setFileName(position);
-
         dialog = new ProgressDialog(PictureDetailActivity.this);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.setMessage("Data Loading..");
@@ -131,7 +129,7 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
             }
         });
 
-        imagePagerAdapter = new ImagePagerAdapter(this, urlDataList, position,FileNametxt);
+        imagePagerAdapter = new ImagePagerAdapter(this, urlDataList, position);
         imagePagerAdapter.setOnPictureAreaClickedListener(this);
 
         viewpager.setAdapter(imagePagerAdapter);
@@ -300,13 +298,11 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
            close_btn.setVisibility(View.INVISIBLE);
             share_btn.setVisibility(View.INVISIBLE);
             save_btn.setVisibility(View.INVISIBLE);
-            FileNametxt.setVisibility(View.INVISIBLE);
         }
         else{
             close_btn.setVisibility(View.VISIBLE);
             share_btn.setVisibility(View.VISIBLE);
             save_btn.setVisibility(View.VISIBLE);
-            FileNametxt.setVisibility(View.VISIBLE);
         }
     }
 
@@ -317,10 +313,6 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         resultIntent.putExtra("currentPosition",currentPosition);
         setResult(RESULT_OK,resultIntent);
         super.onBackPressed();
-    }
-
-    public void setFileName(int position){
-        FileNametxt.setText(urlDataList.get(position).getFileName());
     }
 }
 
