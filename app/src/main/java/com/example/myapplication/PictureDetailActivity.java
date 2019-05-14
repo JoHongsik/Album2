@@ -69,6 +69,7 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.imageviewpager);
 
+
         // Remove notification bar
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 

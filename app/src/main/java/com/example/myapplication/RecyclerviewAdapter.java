@@ -167,13 +167,4 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
         this.page = page;
     }
 
-    public void checkHaveSeen(){
-        Glide.with(context)
-                .load(urlDataList.get(0).getURL())
-                .bitmapTransform(new GrayscaleTransformation(context))
-                .into(viewHolder.imageView);
-
-
-    }
-
 }

@@ -351,7 +351,12 @@ public class MainActivity extends AppCompatActivity {
                     else
                         recyclerView.smoothScrollToPosition(currentPosition);
 
-                    adapter.notifyDataSetChanged();
+
+                    for(int j=0; j<urlDataList.size(); j++){
+                        if(urlDataList.get(j).getHaveSeen())
+                            adapter.notifyItemChanged(j);
+                    }
+
             }
         }
     }
