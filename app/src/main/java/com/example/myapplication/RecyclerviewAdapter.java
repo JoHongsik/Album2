@@ -14,8 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import jp.wasabeef.glide.transformations.GrayscaleTransformation;
 
+import java.util.ArrayList;
+
+import jp.wasabeef.glide.transformations.GrayscaleTransformation;
 
 import static com.example.myapplication.MainActivity.urlDataList;
 
@@ -160,11 +162,9 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
         for (int j = 0; j < urlDataList.size(); j++) {
             urlDataList.get(j).setCheckBoxState(false);
         }
-
     }
 
     public void setPage(int page) {
         this.page = page;
     }
-
 }

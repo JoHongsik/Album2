@@ -55,6 +55,7 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
     private boolean setURLflag = true;
     public String findString = "asset__thumb\"";
     private int page = 0;
+    private ArrayList<Integer> seenArray;
 
     public String URL =
             "https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf,rm&page="+page+"&recency=anydate&suppressfamilycorrection=true";
@@ -73,30 +74,28 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         // Remove notification bar
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-
         // widzet들 선언.
         viewpager = (ViewPager) findViewById(R.id.viewPager);
         close_btn = (ImageButton) findViewById(R.id.close_btn);
         save_btn = (ImageButton) findViewById(R.id.save_btn);
         share_btn = (ImageButton) findViewById(R.id.share_btn);
 
-
-
         // intent로 데이터 받아오기.
         Intent intent = getIntent();
         position = intent.getExtras().getInt("position");
         page = intent.getExtras().getInt("page");
 
+        seenArray = new ArrayList<>();
+
         // 음영처리를 위한 haveseen 처리
         urlDataList.get(position).setHaveSeen(true);
-
+        seenArray.add(position);
 
         //dialog 설정
         dialog = new ProgressDialog(PictureDetailActivity.this);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.setMessage("Data Loading..");
         dialog.setCancelable(false);
-
 
         //close_btn 클릭시 detail페이지 나가기.
         close_btn.setOnClickListener(new View.OnClickListener() {
@@ -141,10 +140,17 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         viewpager.setCurrentItem(position);
 
         viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
             @Override
             //현재 페이지(i)가 urldataList의 끝이고 && 완전히 다 보이는 상태라면 (i1 == 0)
             public void onPageScrolled(int i, float positionOffset, int i1) {
                 currentPosition = i;
+
+                for(int j=0; j<urlDataList.size(); j++){
+                    if(urlDataList.get(j).getHaveSeen())
+                        seenArray.add(j);
+                }
+
                 if (i == (urlDataList.size()-1) && i1==0){
                     // MainActivity의 recyclerview 업데이트
                     dialog.show();
@@ -316,6 +322,7 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         Intent resultIntent = new Intent();
         resultIntent.putExtra("page",page);
         resultIntent.putExtra("currentPosition",currentPosition);
+        resultIntent.putExtra("seenArray",seenArray);
         setResult(RESULT_OK,resultIntent);
         super.onBackPressed();
     }

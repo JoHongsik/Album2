@@ -71,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
 
+    private ArrayList<Integer> seenArray;
+
 
     @Override
     protected void onRestart() {
@@ -280,8 +282,9 @@ public class MainActivity extends AppCompatActivity {
 
         else{
             adapter.notifyItemRangeInserted(urlDataList.size()-(splitLength-1), splitLength-1);
-
         }
+
+
     }
 
     @Override
@@ -342,6 +345,7 @@ public class MainActivity extends AppCompatActivity {
                 case 3000:
                     this.page = data.getExtras().getInt("page");
                     this.currentPosition = data.getExtras().getInt("currentPosition");
+                    this.seenArray = data.getExtras().getIntegerArrayList("seenArray");
 
                     if(comparePage!=page) {
                         adapter.notifyItemRangeInserted(urlDataList.size() - (splitLength - 1), splitLength - 1);
@@ -351,11 +355,13 @@ public class MainActivity extends AppCompatActivity {
                     else
                         recyclerView.smoothScrollToPosition(currentPosition);
 
-
-                    for(int j=0; j<urlDataList.size(); j++){
-                        if(urlDataList.get(j).getHaveSeen())
-                            adapter.notifyItemChanged(j);
+                    // 음영효과 주기 위한 for문
+                    // seenArray는 사용자가 이미 본 이미지의 url number의 array
+                    // urlDataList 전체를 검색 할 for문 돌릴 필요가 없음
+                    for(int j=0; j<seenArray.size(); j++){
+                        adapter.notifyItemChanged(seenArray.get(j));
                     }
+
 
             }
         }
