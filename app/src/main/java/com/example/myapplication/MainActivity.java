@@ -101,13 +101,18 @@ public class MainActivity extends AppCompatActivity {
         Log.d("onDestroy","onDestroy");
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("page",page);
+        outState.putInt("comparePage",comparePage);
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Log.d("onCreate","onCreate");
 
         // toolbart 세팅
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -163,6 +168,11 @@ public class MainActivity extends AppCompatActivity {
 
         // recyclerview 끝지점시 listener -> Progressbar -> setURL 및 recyclerview 데이터 업데이트
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                Log.d("onScrolled","onScrolled"+dy);
+            }
 
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -402,9 +412,12 @@ public class MainActivity extends AppCompatActivity {
                     // 음영효과 주기 위한 for문
                     // seenArray는 사용자가 이미 본 이미지의 url number의 array
                     // urlDataList 전체를 검색 할 for문 돌릴 필요가 없음
-                    for(int j=0; j<seenArray.size(); j++){
+                    /*for(int j=0; j<seenArray.size(); j++){
                         adapter.notifyItemChanged(seenArray.get(j));
-                    }
+                    }*/
+
+                    //notifyDataSetChanged가 훨씬 빠름..
+                    adapter.notifyDataSetChanged();
             }
         }
     }
@@ -414,9 +427,14 @@ public class MainActivity extends AppCompatActivity {
         page = 1;
         comparePage = 2;
         spanCount = 3;
+        isChecked = false;
 
         URL = String.format("https://www.gettyimages.com/photos/free?sort=%s&mediatype=photography&phrase=free&license=rf," +
                 "rm&page=%d&recency=anydate&suppressfamilycorrection=true",kind,page);
+
+        adapter.settingClicked();
+        adapter.setCheckedNull();
+        saveItem.setVisible(isChecked);
 
         currentPosition = 0;
 

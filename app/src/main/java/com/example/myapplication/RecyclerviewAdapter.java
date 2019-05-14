@@ -69,7 +69,6 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
         }
 
         ViewHolder.imageView.getHeight();
-
         if(urlDataList.get(i).getHaveSeen()) {
             if (ViewHolder.imageView.getMeasuredHeight() == 0)
                 Glide.with(context)
