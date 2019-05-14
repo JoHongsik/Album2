@@ -16,18 +16,19 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
+import static com.example.myapplication.MainActivity.urlDataList;
+
 
 public class ImagePagerAdapter extends PagerAdapter {
     private Context context;
     private ImageView imageView;
-    private ArrayList<URLData> urlDataList;
+
     private int urlposition;
     private OnPictureAreaClickedListener listener;
     private TextView filenametxt;
 
-    public ImagePagerAdapter(Context context,ArrayList<URLData> urlDataList, int position){
+    public ImagePagerAdapter(Context context, int position){
         this.context = context;
-        this.urlDataList = urlDataList;
         this.urlposition = position;
     }
 

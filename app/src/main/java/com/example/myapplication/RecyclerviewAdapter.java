@@ -14,19 +14,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import jp.wasabeef.glide.transformations.GrayscaleTransformation;
 
-import java.io.File;
-import java.util.ArrayList;
+
+import static com.example.myapplication.MainActivity.urlDataList;
 
 public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapter.ImgViewHolder> {
-    public ArrayList<URLData> urlDataList;
+
     public Context context;
     public boolean checkboxVis = false;
     private int page = 0;
     private String FileName;
+    ImgViewHolder viewHolder;
 
-    public RecyclerviewAdapter(ArrayList<URLData> urlDataList, Context context) {
-        this.urlDataList = urlDataList;
+    public RecyclerviewAdapter( Context context) {
         this.context = context;
     }
 
@@ -40,6 +41,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     //View의 내용을 해당 포지션의 데이터로 바꾼다.
     @Override
     public void onBindViewHolder(@NonNull ImgViewHolder ViewHolder, int i) {
+        this.viewHolder = ViewHolder;
         ViewHolder.checkBox.setChecked(urlDataList.get(i).getCheckBoxState());
         urlDataList.get(i).setURLNo(i);
 
@@ -52,23 +54,38 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
         Log.d("adsf",""+((ImgViewHolder)ViewHolder).imageView.getMeasuredHeight());
 
         if (checkboxVis) {
-            ((ImgViewHolder)ViewHolder).checkBox.setVisibility(View.VISIBLE);
+            ViewHolder.checkBox.setVisibility(View.VISIBLE);
         } else {
             ViewHolder.checkBox.setVisibility(View.GONE);
         }
 
         ViewHolder.imageView.getHeight();
 
-        if(ViewHolder.imageView.getMeasuredHeight()==0)
-            Glide.with(context)
-                    .load(urlDataList.get(i).getURL())
-                    .into(ViewHolder.imageView);
-        else
-            Glide.with(context)
-                    .load(urlDataList.get(i).getURL())
-                    .override(ViewHolder.imageView.getMeasuredWidth(),ViewHolder.imageView.getMeasuredHeight())
-                    .into(ViewHolder.imageView);
+        if(urlDataList.get(i).getHaveSeen()) {
+            if (ViewHolder.imageView.getMeasuredHeight() == 0)
+                Glide.with(context)
+                        .load(urlDataList.get(i).getURL())
+                        .bitmapTransform(new GrayscaleTransformation(context))
+                        .into(ViewHolder.imageView);
+            else
+                Glide.with(context)
+                        .load(urlDataList.get(i).getURL())
+                        .bitmapTransform(new GrayscaleTransformation(context))
+                        .override(ViewHolder.imageView.getMeasuredWidth(), ViewHolder.imageView.getMeasuredHeight())
+                        .into(ViewHolder.imageView);
+        }
 
+        else{
+            if (ViewHolder.imageView.getMeasuredHeight() == 0)
+                Glide.with(context)
+                        .load(urlDataList.get(i).getURL())
+                        .into(ViewHolder.imageView);
+            else
+                Glide.with(context)
+                        .load(urlDataList.get(i).getURL())
+                        .override(ViewHolder.imageView.getMeasuredWidth(), ViewHolder.imageView.getMeasuredHeight())
+                        .into(ViewHolder.imageView);
+        }
 
     }
 
@@ -143,10 +160,20 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
         for (int j = 0; j < urlDataList.size(); j++) {
             urlDataList.get(j).setCheckBoxState(false);
         }
+
     }
 
     public void setPage(int page) {
         this.page = page;
+    }
+
+    public void checkHaveSeen(){
+        Glide.with(context)
+                .load(urlDataList.get(0).getURL())
+                .bitmapTransform(new GrayscaleTransformation(context))
+                .into(viewHolder.imageView);
+
+
     }
 
 }

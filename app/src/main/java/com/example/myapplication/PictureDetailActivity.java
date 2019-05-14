@@ -37,6 +37,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.example.myapplication.MainActivity.urlDataList;
+
 public class PictureDetailActivity extends Activity implements OnPictureAreaClickedListener {
     private ViewPager viewpager;
     private ImagePagerAdapter imagePagerAdapter;
@@ -46,7 +48,6 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
     public ImageButton save_btn;
     public ImageButton share_btn;
     private String FileName;
-    private ArrayList<URLData> urlDataList;
     private String result;
     private int splitLength;
     private  ArrayList<String> findURL;
@@ -54,7 +55,6 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
     private boolean setURLflag = true;
     public String findString = "asset__thumb\"";
     private int page = 0;
-    private TextView FileNametxt;
 
     public String URL =
             "https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf,rm&page="+page+"&recency=anydate&suppressfamilycorrection=true";
@@ -78,15 +78,19 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         close_btn = (ImageButton) findViewById(R.id.close_btn);
         save_btn = (ImageButton) findViewById(R.id.save_btn);
         share_btn = (ImageButton) findViewById(R.id.share_btn);
-        FileNametxt = (TextView) findViewById(R.id.filename_txt);
+
 
 
         // intent로 데이터 받아오기.
         Intent intent = getIntent();
         position = intent.getExtras().getInt("position");
-        urlDataList = (ArrayList<URLData>) intent.getSerializableExtra("url");
         page = intent.getExtras().getInt("page");
 
+        // 음영처리를 위한 haveseen 처리
+        urlDataList.get(position).setHaveSeen(true);
+
+
+        //dialog 설정
         dialog = new ProgressDialog(PictureDetailActivity.this);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.setMessage("Data Loading..");
@@ -129,7 +133,7 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
             }
         });
 
-        imagePagerAdapter = new ImagePagerAdapter(this, urlDataList, position);
+        imagePagerAdapter = new ImagePagerAdapter(this, position);
         imagePagerAdapter.setOnPictureAreaClickedListener(this);
 
         viewpager.setAdapter(imagePagerAdapter);
@@ -152,7 +156,7 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
 
             @Override
             public void onPageSelected(int i) {
-
+                urlDataList.get(i).setHaveSeen(true);
             }
 
             @Override

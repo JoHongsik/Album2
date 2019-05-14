@@ -50,10 +50,8 @@ public class MainActivity extends AppCompatActivity {
     // 가져온 페이지 소스를 저장할 string 변수
     private String result;
 
-    private String FileName;
-
     // 사진이 들어있는 url을 저장하고 있는 List
-    public ArrayList<URLData> urlDataList;
+    public static ArrayList<URLData> urlDataList;
 
     // 페이지 소스에서 asset__thumb를 몇개 가지고 있는지
     private int splitLength;
@@ -63,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
     private float detectFactor;
     private int spanCount = 3;
     private int compareSpanCount = 3;   // spanCount를 한번만 가져오기 위한 변수.
-
 
     //toolbar 관련 변수들
     private Toolbar toolbar;
@@ -187,6 +184,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+
+                Log.d("size", ""+urlDataList.size());
+
                 if(!recyclerView.canScrollVertically(1)){
                         URL = String.format("https://www.gettyimages.com/photos/free?sort=mostpopular&mediatype=photography&phrase=free&license=rf," +
                                 "rm&page=%d&recency=anydate&suppressfamilycorrection=true",page);
@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
     private void setRecyclerView(){
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        adapter = new RecyclerviewAdapter(urlDataList, this);
+        adapter = new RecyclerviewAdapter(this);
         layoutManager = new GridLayoutManager(this,spanCount);
 
     }
@@ -259,11 +259,11 @@ public class MainActivity extends AppCompatActivity {
             progressBar.setVisibility(View.GONE);
             page++;
             setData();
-        }
-    });
-}
+            }
         });
-                }
+        }
+        });
+    }
 
     private void setData(){
         for(int i=0; i<splitLength-1; i++){
@@ -280,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
 
         else{
             adapter.notifyItemRangeInserted(urlDataList.size()-(splitLength-1), splitLength-1);
-            //recyclerView.smoothScrollToPosition(urlDataList.size()-(splitLength-1));
+
         }
     }
 
@@ -342,8 +342,16 @@ public class MainActivity extends AppCompatActivity {
                 case 3000:
                     this.page = data.getExtras().getInt("page");
                     this.currentPosition = data.getExtras().getInt("currentPosition");
-                    comparePage = page;
-                    recyclerView.smoothScrollToPosition(currentPosition);
+
+                    if(comparePage!=page) {
+                        adapter.notifyItemRangeInserted(urlDataList.size() - (splitLength - 1), splitLength - 1);
+                        recyclerView.smoothScrollToPosition(currentPosition);
+                        comparePage = page;
+                    }
+                    else
+                        recyclerView.smoothScrollToPosition(currentPosition);
+
+                    adapter.notifyDataSetChanged();
             }
         }
     }

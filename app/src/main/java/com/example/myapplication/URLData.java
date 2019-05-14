@@ -7,6 +7,19 @@ public class URLData implements Serializable {
     private boolean checkBoxState;
     private int URLNo;
     private String FileName;
+    private boolean HaveSeen;
+
+    public URLData(){
+        HaveSeen = false;
+    }
+
+    public boolean getHaveSeen() {
+        return HaveSeen;
+    }
+
+    public void setHaveSeen(boolean haveSeen) {
+        HaveSeen = haveSeen;
+    }
 
     public String getFileName() {
         return FileName;
