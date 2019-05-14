@@ -342,17 +342,36 @@ public class MainActivity extends AppCompatActivity {
                 saveImage();
                 break;
             case R.id.filter1:
-                kind = "mostpopular";
-                refresh();
-                break;
+                if(!kind.equals("mostpopular")) {
+                    kind = "mostpopular";
+                    refresh();
+                    break;
+                }
+                else{
+                    Toast.makeText(this, "Already here", Toast.LENGTH_SHORT).show();
+                    break;
+                }
             case R.id.filter2:
-                kind = "newest";
-                refresh();
-                break;
+                if(!kind.equals("newest")) {
+                    kind = "newest";
+                    refresh();
+                    break;
+                }
+                else{
+                    Toast.makeText(this, "Already here", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
             case R.id.filter3:
-                kind = "best";
-                refresh();
-                break;
+                if(!kind.equals("best")) {
+                    kind = "best";
+                    refresh();
+                    break;
+                }
+                else{
+                    Toast.makeText(this, "Already here", Toast.LENGTH_SHORT).show();
+                    break;
+                }
         }
         return super.onOptionsItemSelected(item);
     }
