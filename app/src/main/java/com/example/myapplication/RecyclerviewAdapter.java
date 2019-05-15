@@ -48,7 +48,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
         urlDataList.get(i).setURLNo(i);
 
         //FileName 정하기 (split으로 url이름 잘라서)
-        Log.d("FileName",urlDataList.get(i).getURL().split("-picture")[0]);
+        Log.d("FileName",urlDataList.get(i).getURL());
         FileName = urlDataList.get(i).getURL().split("-picture")[0];
         FileName = FileName.split("/photos")[1];
 

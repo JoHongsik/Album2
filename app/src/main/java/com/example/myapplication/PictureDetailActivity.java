@@ -110,21 +110,10 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
             public void onClick(View v) {
                 // WRITE_EXTERNAL_STORAGE 권한 허가 요청
                 CheckPermission();
-
-                // gilde로 bitmap형식의 image파일 준비 후 saveimage 메소드 호출(이미지 저장)
-                Glide.with(PictureDetailActivity.this)
-                        .load(urlDataList.get(position).getURL())
-                        .asBitmap()
-                        .into(new SimpleTarget<Bitmap>() {
-                            @RequiresApi(api = Build.VERSION_CODES.M)
-                            @Override
-                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                if(CheckPermission())
-                                    saveImage(resource);
-                            }
-                        });
+                DownloadImage(position);
             }
         });
+
 
         share_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -217,6 +206,8 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         sendBroadcast(mediaScanIntent);
+
+        DownloadImage(++position);
     }
 
     public boolean CheckPermission(){
@@ -325,6 +316,21 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         resultIntent.putExtra("seenArray",seenArray);
         setResult(RESULT_OK,resultIntent);
         super.onBackPressed();
+    }
+
+    public void DownloadImage(int urlno){
+        // gilde로 bitmap형식의 image파일 준비 후 saveimage 메소드 호출(이미지 저장)
+        Glide.with(PictureDetailActivity.this)
+                .load(urlDataList.get(urlno).getURL())
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        if(CheckPermission())
+                            saveImage(resource);
+                    }
+                });
     }
 }
 
