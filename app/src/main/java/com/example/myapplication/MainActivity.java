@@ -2,6 +2,8 @@ package com.example.myapplication;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -95,6 +97,10 @@ public class MainActivity extends AppCompatActivity {
     private String kind;
     private String FileName;
 
+    private AlertDialog.Builder imgdownBuilder;
+    private AlertDialog imgdowndialog;
+    private ProgressBar imgprogressbar;
+
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -138,6 +144,11 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         kind = "mostpopular";
+
+        imgdownBuilder = new AlertDialog.Builder(this);
+        imgdownBuilder.setCancelable(false);
+        imgdownBuilder.setView(R.layout.loading_dialog);
+        imgdowndialog = imgdownBuilder.create();
 
         //화면 세로로 고정
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -368,6 +379,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.save:
+                imgdowndialog.show();
                 adapter.saveClicked();
                 saveImageClicked();
                 break;
@@ -417,10 +429,10 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("adsfasdfasfd","  "+j);
         }
         DownloadImage(checkedpicNum.get(downloadNum));
-
     }
 
     public void DownloadImage(int urlno){
+        Log.d("DownloadImage1","DownloadImage1" + downloadNum);
         // gilde로 bitmap형식의 image파일 준비 후 saveimage 메소드 호출(이미지 저장)
         Glide.with(MainActivity.this)
                 .load(urlDataList.get(urlno).getURL())
@@ -429,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
                     @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        Log.d("DownloadImage","DownloadImage" + downloadNum);
+                        Log.d("DownloadImage2","DownloadImage2" + downloadNum);
                         if(CheckPermission())
                             saveImage(resource);
                     }
@@ -495,8 +507,10 @@ public class MainActivity extends AppCompatActivity {
             Uri contentUri = Uri.fromFile(f);
             mediaScanIntent.setData(contentUri);
             sendBroadcast(mediaScanIntent);
+            imgdowndialog.dismiss();
             downloadNum = 0;
             Log.d("downloadNum",""+downloadNum);
+
         }
     }
 
