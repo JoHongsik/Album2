@@ -158,9 +158,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
 
     // 추가버튼 눌렀을 때 이벤트
     public void saveClicked() {
-        for (int j = 0; j < urlDataList.size(); j++) {
 
-        }
     }
 
     // 체크된거 리셋하기

@@ -36,6 +36,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -408,12 +409,113 @@ public class MainActivity extends AppCompatActivity {
     public void saveImageClicked(){
         checkedpicNum = new ArrayList<>();
         for(int j=0; j<urlDataList.size(); j++){
-            if(urlDataList.get(j).getCheckBoxState())
+            if(urlDataList.get(j).getCheckBoxState())   // 체크된 이미지라면 (getCheckBoxState가 true이면)
                 checkedpicNum.add(j);
         }
-
+        for(int j=0; j<urlDataList.size(); j++){
+            if(urlDataList.get(j).getCheckBoxState())   // 체크된 이미지라면 (getCheckBoxState가 true이면)
+                Log.d("adsfasdfasfd","  "+j);
+        }
         DownloadImage(checkedpicNum.get(downloadNum));
 
+    }
+
+    public void DownloadImage(int urlno){
+        // gilde로 bitmap형식의 image파일 준비 후 saveimage 메소드 호출(이미지 저장)
+        Glide.with(MainActivity.this)
+                .load(urlDataList.get(urlno).getURL())
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        Log.d("DownloadImage","DownloadImage" + downloadNum);
+                        if(CheckPermission())
+                            saveImage(resource);
+                    }
+                });
+    }
+
+
+    private String saveImage(Bitmap image) {
+        String savedImagePath = null;
+
+        Log.d("saveImage","saveImage" + downloadNum);
+
+        //FileName 정하기 (split으로 url이름 잘라서)
+        FileName = urlDataList.get(checkedpicNum.get(downloadNum)).getURL().split("-picture")[0];
+        FileName = FileName.split("/photos/")[1];
+        String imageFileName = FileName + ".jpg";
+
+        // 파일경로 설정.
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                + "/TestAlbum");
+        boolean success = true;
+
+        // 파일경로에 폴더가 존재하지 않으면 디렉토리 생성.
+        if (!storageDir.exists()) {
+            success = storageDir.mkdirs();
+        }
+
+        // Image파일의 경로와 이름 설정한 파일 생성. (/storage/emulated/0/Pictures/TestAlbum/enjoying-the-fresh-sea-air.jpg)
+        if (success) {
+            File imageFile = new File(storageDir, imageFileName);
+            savedImagePath = imageFile.getAbsolutePath(); ///storage/emulated/0/Pictures/TestAlbum/enjoying-the-fresh-sea-air.jpg
+            try {
+                OutputStream fOut = new FileOutputStream(imageFile);
+                image.compress(Bitmap.CompressFormat.JPEG, 100, fOut);  // 비트맵 파일을 파일로 저장.
+                fOut.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // Add the image to the system gallery , 미디어스캔 실행.
+            galleryAddPic(savedImagePath);
+
+        }
+        return savedImagePath;
+    }
+
+    private void galleryAddPic(String imagePath) { // https://underground2.tistory.com/43
+        Log.d("galleryAddPic","galleryAddPic" + downloadNum);
+
+        ++downloadNum;
+
+        if(checkedpicNum.size()!=downloadNum) {
+            DownloadImage(checkedpicNum.get(downloadNum)); //다음 이미지 다운로드
+            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            File f = new File(imagePath);
+            Uri contentUri = Uri.fromFile(f);
+            mediaScanIntent.setData(contentUri);
+            sendBroadcast(mediaScanIntent);
+        }
+        else{
+            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            File f = new File(imagePath);
+            Uri contentUri = Uri.fromFile(f);
+            mediaScanIntent.setData(contentUri);
+            sendBroadcast(mediaScanIntent);
+            downloadNum = 0;
+            Log.d("downloadNum",""+downloadNum);
+        }
+    }
+
+    public boolean CheckPermission(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.d("test","Permission is granted");
+                return true;
+            } else {
+                Log.d("test","Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                return false;
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.d("test","Permission is granted");
+            return true;
+        }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -467,90 +569,5 @@ public class MainActivity extends AppCompatActivity {
 
         setRecyclerView();
         setURL();
-    }
-    public boolean CheckPermission(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                Log.d("test","Permission is granted");
-                return true;
-            } else {
-                Log.d("test","Permission is revoked");
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-                return false;
-            }
-        }
-        else { //permission is automatically granted on sdk<23 upon installation
-            Log.d("test","Permission is granted");
-            return true;
-        }
-    }
-
-    public void DownloadImage(int urlno){
-        // gilde로 bitmap형식의 image파일 준비 후 saveimage 메소드 호출(이미지 저장)
-        Glide.with(MainActivity.this)
-                .load(urlDataList.get(urlno).getURL())
-                .asBitmap()
-                .into(new SimpleTarget<Bitmap>() {
-                    @RequiresApi(api = Build.VERSION_CODES.M)
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        if(CheckPermission())
-                            saveImage(resource);
-                    }
-                });
-    }
-
-
-    private String saveImage(Bitmap image) {
-        String savedImagePath = null;
-
-        //FileName 정하기 (split으로 url이름 잘라서)
-        FileName = urlDataList.get(checkedpicNum.get(downloadNum)).getURL().split("-picture")[0];
-        FileName = FileName.split("/photos/")[1];
-        String imageFileName = FileName + ".jpg";
-
-        // 파일경로 설정.
-        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                + "/TestAlbum");
-        boolean success = true;
-
-        // 파일경로에 폴더가 존재하지 않으면 디렉토리 생성.
-        if (!storageDir.exists()) {
-            success = storageDir.mkdirs();
-        }
-
-        // Image파일의 경로와 이름 설정한 파일 생성. (/storage/emulated/0/Pictures/TestAlbum/enjoying-the-fresh-sea-air.jpg)
-        if (success) {
-            File imageFile = new File(storageDir, imageFileName);
-            savedImagePath = imageFile.getAbsolutePath(); ///storage/emulated/0/Pictures/TestAlbum/enjoying-the-fresh-sea-air.jpg
-            try {
-                OutputStream fOut = new FileOutputStream(imageFile);
-                image.compress(Bitmap.CompressFormat.JPEG, 100, fOut);  // 비트맵 파일을 파일로 저장.
-                fOut.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            // Add the image to the system gallery , 미디어스캔 실행.
-            galleryAddPic(savedImagePath);
-            Toast.makeText(MainActivity.this, "IMAGE SAVED" + downloadNum, Toast.LENGTH_LONG).show();
-        }
-        return savedImagePath;
-    }
-
-    private void galleryAddPic(String imagePath) { // https://underground2.tistory.com/43
-        ++downloadNum;
-        if(checkedpicNum.size()-1!=downloadNum)
-            DownloadImage(checkedpicNum.get(downloadNum));
-        else{
-            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            File f = new File(imagePath);
-            Uri contentUri = Uri.fromFile(f);
-            mediaScanIntent.setData(contentUri);
-            sendBroadcast(mediaScanIntent);
-            downloadNum = 0;
-            Log.d("downloadNum",""+downloadNum);
-        }
     }
 }

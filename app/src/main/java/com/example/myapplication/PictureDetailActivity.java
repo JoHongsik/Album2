@@ -206,8 +206,6 @@ public class PictureDetailActivity extends Activity implements OnPictureAreaClic
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         sendBroadcast(mediaScanIntent);
-
-        DownloadImage(++position);
     }
 
     public boolean CheckPermission(){
