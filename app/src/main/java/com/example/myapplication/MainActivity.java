@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -37,6 +39,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -414,6 +417,11 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, "Already here", Toast.LENGTH_SHORT).show();
                     break;
                 }
+            case R.id.loadImage:
+                Intent intent = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, 2000);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -557,11 +565,23 @@ public class MainActivity extends AppCompatActivity {
 
                     //notifyDataSetChanged가 훨씬 빠름..
                     adapter.notifyDataSetChanged();
+                    break;
+                case 2000:
+                    Log.d("resultcode",""+resultCode);
+                    if (resultCode == RESULT_OK){
+                        Uri targetUri = data.getData();
+                        Intent intent = new Intent(MainActivity.this, LocalImageActivity.class);
+                        intent.putExtra("targetUri",targetUri);
+                        startActivity(intent);
+
+                    }
+                    break;
+
             }
         }
     }
 
-    public void refresh(){
+    public void refresh() {
         seenArray = new ArrayList<>();
         page = 1;
         comparePage = 2;
@@ -569,7 +589,7 @@ public class MainActivity extends AppCompatActivity {
         isChecked = false;
 
         URL = String.format("https://www.gettyimages.com/photos/free?sort=%s&mediatype=photography&phrase=free&license=rf," +
-                "rm&page=%d&recency=anydate&suppressfamilycorrection=true",kind,page);
+                "rm&page=%d&recency=anydate&suppressfamilycorrection=true", kind, page);
 
         adapter.settingClicked();
         adapter.setCheckedNull();
