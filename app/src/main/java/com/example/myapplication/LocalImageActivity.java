@@ -23,17 +23,24 @@ public class LocalImageActivity extends Activity {
         setContentView(R.layout.activity_localimg_detail);
         imageView = (ImageView) findViewById(R.id.localImageview);
 
+
         Intent intent = getIntent();
         this.targetUri = intent.getParcelableExtra("targetUri");
 
         try {
             bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(targetUri));
+
             imageView.setImageBitmap(bitmap);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
 
 
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

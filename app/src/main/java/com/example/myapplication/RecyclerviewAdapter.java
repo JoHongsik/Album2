@@ -28,6 +28,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     private int page = 0;
     private String FileName;
     ImgViewHolder viewHolder;
+    private int AdapterPosition;
 
     public RecyclerviewAdapter( Context context) {
         this.context = context;
@@ -107,12 +108,13 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     class ImgViewHolder extends RecyclerView.ViewHolder {
         public ImageView imageView;
         public CheckBox checkBox;
-
         public ImgViewHolder(View v) {
             super(v);
 
             imageView = (ImageView) v.findViewById(R.id.ImageView);
             checkBox = (CheckBox) v.findViewById(R.id.checkbox);
+
+            AdapterPosition = getAdapterPosition();
 
             Log.d("ImgViewHolder called","ImgViewHolder called");
 

@@ -201,19 +201,12 @@ public class MainActivity extends AppCompatActivity {
 
         // recyclerview 끝지점시 listener -> Progressbar -> setURL 및 recyclerview 데이터 업데이트
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                Log.d("onScrolled","onScrolled"+dy);
-            }
 
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
-                Log.d("size", ""+urlDataList.size());
-
-                if(!recyclerView.canScrollVertically(1)){
+                if(!recyclerView.canScrollVertically(1 ) ){
                     URL = String.format("https://www.gettyimages.com/photos/free?sort=%s&mediatype=photography&phrase=free&license=rf," +
                             "rm&page=%d&recency=anydate&suppressfamilycorrection=true",kind,page);
 
@@ -458,12 +451,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     private String saveImage(Bitmap image) {
-        String savedImagePath = null;
+            String savedImagePath = null;
 
-        Log.d("saveImage","saveImage" + downloadNum);
+            Log.d("saveImage","saveImage" + downloadNum);
 
-        //FileName 정하기 (split으로 url이름 잘라서)
-        FileName = urlDataList.get(checkedpicNum.get(downloadNum)).getURL().split("-picture")[0];
+            //FileName 정하기 (split으로 url이름 잘라서)
+            FileName = urlDataList.get(checkedpicNum.get(downloadNum)).getURL().split("-picture")[0];
         FileName = FileName.split("/photos/")[1];
         String imageFileName = FileName + ".jpg";
 
